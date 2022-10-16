@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/postgres'
+    username: 'postgres'
+    password: 'Orion123'
+    hikari:
+      catalog: 'public'
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        default_schema: 'public'
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
