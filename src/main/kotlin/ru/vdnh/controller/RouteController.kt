@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import ru.vdnh.model.dto.RouteDTO
+import ru.vdnh.model.dto.RouteDTOList
 import ru.vdnh.service.RouteService
 import java.math.BigInteger
 
@@ -26,6 +26,7 @@ class RouteController(val routeService: RouteService) {
         ]
     )
     @GetMapping
-    fun findRoutes(@RequestParam idFrom: BigInteger, @RequestParam idTo: BigInteger): List<RouteDTO> =
-        routeService.findRoutes(idFrom, idTo)
+    fun findRoutes(@RequestParam idFrom: BigInteger, @RequestParam idTo: BigInteger): RouteDTOList {
+        return routeService.findRoutes(idFrom, idTo)
+    }
 }

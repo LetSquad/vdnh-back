@@ -16,7 +16,6 @@ class EventMapper {
         url = entity.url,
         imageUrl = entity.imageUrl,
         coordinatesId = entity.coordinatesId,
-        categoryCode = entity.categoryCode,
         typeCode = entity.typeCode,
         subjectCode = entity.subjectCode
     )
@@ -30,7 +29,6 @@ class EventMapper {
         url = domain.url,
         imageUrl = domain.imageUrl,
         coordinatesId = domain.coordinatesId,
-        categoryCode = domain.categoryCode,
         typeCode = domain.typeCode,
         subjectCode = domain.subjectCode
     )

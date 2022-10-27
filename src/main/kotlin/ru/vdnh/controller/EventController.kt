@@ -25,7 +25,9 @@ class EventController(val eventService: EventService) {
         ]
     )
     @GetMapping("{id}")
-    fun findEvent(@PathVariable id: BigInteger): EventDTO = eventService.findEvent(id)
+    fun findEvent(@PathVariable id: BigInteger): EventDTO {
+        return eventService.findEvent(id)
+    }
 
     @Operation(
         summary = "Получение всех событий"
@@ -36,5 +38,7 @@ class EventController(val eventService: EventService) {
         ]
     )
     @GetMapping
-    fun getAll(): List<EventDTO> = eventService.getAll()
+    fun getAll(): List<EventDTO> {
+        return eventService.getAll()
+    }
 }

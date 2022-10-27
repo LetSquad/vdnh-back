@@ -11,7 +11,6 @@ data class Event(
     val url: String?,
     val imageUrl: String?,
     val coordinatesId: BigInteger,
-    val categoryCode: String?,
     val typeCode: String?,
     val subjectCode: String?
 )
