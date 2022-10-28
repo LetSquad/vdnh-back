@@ -1,16 +1,14 @@
 package ru.vdnh.model.domain
 
-import java.math.BigInteger
-
 data class Event(
-    val id: BigInteger,
+    val id: Long,
     val title: String?,
     val titleEn: String?,
     val titleCn: String?,
     val priority: Int?,
     val url: String?,
     val imageUrl: String?,
-    val coordinatesId: BigInteger,
+    val coordinatesId: Long?,
     val typeCode: String?,
     val subjectCode: String?
 )

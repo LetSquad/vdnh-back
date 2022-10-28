@@ -1,24 +1,19 @@
 package ru.vdnh.model.entity
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Table
-import java.sql.Date
 import java.sql.Timestamp
 
-@Table("event")
-data class EventEntity(
-    @Id val id: Long,
+data class PlaceEntity(
+    val id: Long,
     val title: String,
     val titleEn: String?,
     val titleCn: String?,
     val priority: Int?,
     val url: String,
     val imageUrl: String?,
+    val ticketsUrl: String?,
     val isActive: Boolean,
-    val startDate: Date?,
-    val finishDate: Date?,
 
-    val coordinatesId: Long?,
+    val coordinatesId: Long,
     val scheduleId: Long?,
 
     val typeCode: String,

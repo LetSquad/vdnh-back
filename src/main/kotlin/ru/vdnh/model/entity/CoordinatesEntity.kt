@@ -6,4 +6,10 @@ import java.math.BigDecimal
 import java.math.BigInteger
 
 @Table("coordinates")
-data class RouteEntity(@Id val id: BigInteger, val latitude: BigDecimal, val longitude: BigDecimal)
+data class CoordinatesEntity(
+    @Id val id: Long,
+    val latitude: BigDecimal,
+    val longitude: BigDecimal,
+    val connections: String?,
+    val loadFactor: String?
+)

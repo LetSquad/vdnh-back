@@ -5,14 +5,14 @@ import java.math.BigInteger
 
 @Schema(description = "Event model")
 data class EventDTO(
-    val id: BigInteger,
+    val id: Long,
     val title: String?,
     val titleEn: String?,
     val titleCn: String?,
     val priority: Int?,
     val url: String?,
     val imageUrl: String?,
-    val coordinatesId: BigInteger,
+    val coordinatesId: Long?,
     val typeCode: String?,
     val subjectCode: String?
 )

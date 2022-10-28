@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: 'jdbc:postgresql://localhost:5432/postgres'
+    url: 'jdbc:postgresql://localhost:5432/vdnh_back'
     username: 'postgres'
-    password: 'Orion123'
+    password: 'postgres'
     hikari:
       catalog: 'public'
   jpa:
