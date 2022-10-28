@@ -8,6 +8,7 @@ import java.math.BigInteger
 
 @Service
 class RouteService(val routeRepository: RouteRepository, val routeMapper: RouteMapper) {
+
     fun findRoutes(idFrom: BigInteger, idTo: BigInteger): RouteDTOList {
         val routeFrom = routeRepository.findRoute(idFrom)
             .let { routeMapper.entityToDomain(it) }
