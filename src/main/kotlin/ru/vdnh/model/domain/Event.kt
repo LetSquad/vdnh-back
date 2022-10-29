@@ -24,7 +24,7 @@ data class Event(
     val coordinates: LocationCoordinates?,
     val schedule: Schedule?,
 
-    val typeCode: String,
+    val typeCode: String?,
     val subjectCode: String?,
 
     val createdAt: Instant

@@ -19,4 +19,7 @@ class EventService(val eventRepository: EventRepository, val eventMapper: EventM
             .map { eventMapper.entityToDomain(it) }
             .map { eventMapper.domainToDTO(it) }
     }
+
+    fun getEventsBySubject(subjectCode: String) =
+        eventRepository.getAllWhereSubjectCode(subjectCode).map { eventMapper.entityToDomain(it) }
 }

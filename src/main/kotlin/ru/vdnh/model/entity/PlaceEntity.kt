@@ -6,7 +6,7 @@ import java.sql.Timestamp
 
 data class PlaceEntity(
     val id: Long,
-    val title: String,
+    val title: String?,
     val titleEn: String?,
     val titleCn: String?,
     val priority: Int,

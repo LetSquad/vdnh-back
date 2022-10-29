@@ -8,4 +8,7 @@ import java.math.BigInteger
 interface EventRepository : CrudRepository<EventEntity, BigInteger> {
     @Query("select * from event where id = :id")
     fun findEvent(id: BigInteger): EventEntity
+
+    @Query("select * from event where subject_code = :subjectCode")
+    fun getAllWhereSubjectCode(subjectCode: String): List<EventEntity>
 }

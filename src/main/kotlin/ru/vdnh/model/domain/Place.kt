@@ -7,7 +7,7 @@ import java.time.Instant
 
 data class Place(
     val id: Long,
-    val title: String,
+    val title: String?,
     val titleEn: String?,
     val titleCn: String?,
     val priority: Int?,
@@ -20,7 +20,7 @@ data class Place(
     val isActive: Boolean,
 
     val coordinates: LocationCoordinates,
-    val schedule: Schedule?,
+    val schedule: Schedule?, // TODO
 
     val typeCode: String,
     val subjectCode: String?,
