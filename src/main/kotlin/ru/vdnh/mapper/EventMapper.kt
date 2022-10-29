@@ -35,7 +35,7 @@ class EventMapper(
         finishDate = entity.finishDate,
         typeCode = entity.typeCode,
         subjectCode = entity.subjectCode,
-        coordinates = entity.coordinates?.let { coordinatesMapper.entityToLocationDomain(it) },
+        coordinates = entity.coordinates?.let { coordinatesMapper.entityToDomain(it) },
         schedule = entity.schedule?.let { mapper.readValue(it) },
         createdAt = entity.createdAt.toInstant(),
         type = LocationType(

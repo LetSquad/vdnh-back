@@ -19,7 +19,7 @@ data class Place(
     val ticketsUrl: String?,
     val isActive: Boolean,
 
-    val coordinates: LocationCoordinates,
+    val coordinates: Coordinates,
     val type: LocationType,
     val schedule: Schedule?,
 

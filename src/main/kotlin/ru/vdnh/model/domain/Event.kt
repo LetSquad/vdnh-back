@@ -21,11 +21,11 @@ data class Event(
     val startDate: Date?,
     val finishDate: Date?,
 
-    val coordinates: LocationCoordinates?,
+    val coordinates: Coordinates?,
     val type: LocationType,
     val schedule: Schedule?,
 
-    val typeCode: String,
+    val typeCode: String?,
     val subjectCode: String?,
 
     val createdAt: Instant,

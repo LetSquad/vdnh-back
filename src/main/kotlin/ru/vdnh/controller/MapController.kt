@@ -1,16 +1,17 @@
 package ru.vdnh.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import ru.vdnh.model.dto.CoordinateDTOList
+import ru.vdnh.model.dto.FastNavigationRequestDTO
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.model.dto.MapDataDTO
 import ru.vdnh.service.CoordinatesService
 import ru.vdnh.service.MapService
+import ru.vdnh.service.NavigationService
 import java.math.BigInteger
 import java.time.DayOfWeek
 
@@ -19,6 +20,7 @@ import java.time.DayOfWeek
 @RequestMapping("/map")
 class MapController(
     private val coordinatesService: CoordinatesService,
+    private val navigationService: NavigationService,
     private val mapService: MapService
 ) {
 
@@ -48,4 +50,16 @@ class MapController(
     fun getEventsAndPlaces(): MapDataDTO {
         return mapService.getEventsAndPlaces()
     }
+
+    @Operation(
+        summary = "Построение быстрого маршрута"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Successful Operation")
+        ]
+    )
+    @PostMapping("fast")
+    fun fastNavigate(@RequestBody dto: FastNavigationRequestDTO): MapDataDTO =
+        navigationService.fastNavigate(dto)
 }

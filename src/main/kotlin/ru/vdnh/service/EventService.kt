@@ -28,4 +28,24 @@ class EventService(val eventRepository: EventRepository, val eventMapper: EventM
             .let { eventMapper.entityToDomain(it, places) }
             .let { eventMapper.domainToDTO(it) }
     }
+
+    fun getByCoordinatesId(coordinatesId: Long): EventDTO {
+        val event = eventRepository.getByCoordinatesId(coordinatesId)
+        val places = eventRepository.getPlacesByEventId(event.id)
+
+        return event
+            .let { eventMapper.entityToDomain(it, places) }
+            .let { eventMapper.domainToDTO(it) }
+    }
+
+    fun getActiveEventsBySubject(subjectCode: String): List<Event> {
+        val events: List<EventEntity> = eventRepository.getAllActiveWhereSubjectCode(subjectCode)
+        val eventsDomainList = mutableListOf<Event>()
+        for (event in events) {
+            val placesByEventId: List<Long> = eventRepository.getPlacesByEventId(event.id)
+            eventsDomainList.add(eventMapper.entityToDomain(event, placesByEventId))
+        }
+        return eventsDomainList
+    }
+
 }

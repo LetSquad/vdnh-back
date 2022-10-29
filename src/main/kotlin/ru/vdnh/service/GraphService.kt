@@ -2,44 +2,83 @@ package ru.vdnh.service
 
 import org.jgrapht.graph.DefaultUndirectedWeightedGraph
 import org.jgrapht.graph.DefaultWeightedEdge
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
+import org.jgrapht.traverse.ClosestFirstIterator
 import org.springframework.stereotype.Service
 import ru.vdnh.getLogger
-import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.RouteNode
-import ru.vdnh.repository.CoordinatesRepository
+import kotlin.math.acos
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 @Service
-class GraphService(
-    private val routeMapper: RouteMapper,
-    private val coordinatesRepository: CoordinatesRepository
-) : ApplicationRunner {
+class GraphService {
 
-    private val routesGraph = DefaultUndirectedWeightedGraph<RouteNode, DefaultWeightedEdge>(DefaultWeightedEdge::class.java)
+    fun getClosestRoute(
+        graph: DefaultUndirectedWeightedGraph<RouteNode, DefaultWeightedEdge>,
+        nodeStart: RouteNode
+    ): List<RouteNode> {
+        val route: MutableList<RouteNode> = mutableListOf()
+        ClosestFirstIterator(graph, nodeStart)
+            .forEach { route.add(it) }
 
-    override fun run(args: ApplicationArguments) {
+        return route
+    }
+
+    fun createGraphFromRouteNodes(routeNodes: List<RouteNode>): DefaultUndirectedWeightedGraph<RouteNode, DefaultWeightedEdge> {
+        val resultGraph =
+            DefaultUndirectedWeightedGraph<RouteNode, DefaultWeightedEdge>(DefaultWeightedEdge::class.java)
+
         log.info("Routes graph initialization started")
 
-        val routeNodes: Map<Long, RouteNode> = coordinatesRepository.getAllCoordinates()
-            .map { routeMapper.coordinatesEntityToNodeDomain(it) }
-            .associateBy { it.coordinatesId }
-
-        for (routeNode in routeNodes.values) {
-            routesGraph.addVertex(routeNode)
+        for (routeNode in routeNodes) {
+            resultGraph.addVertex(routeNode)
         }
-        for (sourceNode in routeNodes.values) {
-            for (targetCoordinates in sourceNode.connectedCoordinatesId) {
-                routesGraph.addEdge(sourceNode, routeNodes.getValue(targetCoordinates))
-                    ?.also { routesGraph.setEdgeWeight(it, 1.0) } //TODO: set weights
+        for (sourceNode in routeNodes) {
+            for (connectedNode in routeNodes) {
+                resultGraph.addEdge(sourceNode, connectedNode)
+                    ?.also {
+                        val distance = distanceInMeters(sourceNode, connectedNode)
+                        if (distance > 0) {
+                            resultGraph.setEdgeWeight(it, distance)
+                        }
+                    }
             }
+
         }
 
-        log.info("Routes graph initialized with ${routesGraph.vertexSet().size} vertices and ${routesGraph.edgeSet().size} edges")
+        log.info("Routes graph initialized with ${resultGraph.vertexSet().size} vertices and ${resultGraph.edgeSet().size} edges")
+
+        return resultGraph
+    }
+
+    private fun distanceInMeters(node1: RouteNode, node2: RouteNode): Double {
+        val theta = node1.longitude.toDouble() - node2.longitude.toDouble()
+        var dist = sin(deg2rad(node1.latitude.toDouble())) * sin(deg2rad(node2.latitude.toDouble())) +
+                cos(deg2rad(node1.latitude.toDouble())) * cos(deg2rad(node2.latitude.toDouble())) *
+                cos(deg2rad(theta))
+        dist = acos(dist)
+        dist = rad2deg(dist)
+        dist *= MINUTES_IN_DEGREE * STATUE_MILES_IN_NAUTICAL_MILES
+        dist *= KM_IN_MILES
+        dist *= METERS_IN_KM
+        return dist
+    }
+
+    private fun deg2rad(deg: Double): Double {
+        return deg * Math.PI / 180.0
+    }
+
+    private fun rad2deg(rad: Double): Double {
+        return rad * 180.0 / Math.PI
     }
 
     companion object {
         private val log = getLogger<GraphService>()
+
+        private const val MINUTES_IN_DEGREE = 60
+        private const val STATUE_MILES_IN_NAUTICAL_MILES = 1.1515
+        private const val KM_IN_MILES = 1.609344
+        private const val METERS_IN_KM = 1000
     }
 }

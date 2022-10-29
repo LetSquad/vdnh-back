@@ -2,6 +2,7 @@ package ru.vdnh.repository
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
+import ru.vdnh.model.domain.LoadFactor
 import ru.vdnh.model.entity.CoordinatesEntity
 import ru.vdnh.repository.mapper.CoordinatesRowMapper
 import java.math.BigInteger
@@ -24,5 +25,30 @@ class CoordinatesJdbc(
             "SELECT id as coordinates_id, latitude, longitude, connections, load_factor FROM coordinates where id = ?",
             coordinatesRowMapper, id
         )!!
+    }
+
+    override fun getLoadFactorByCoordinateId(id: Long) =
+        jdbcTemplate.queryForObject(
+            "SELECT load_factor FROM coordinates WHERE id = $id"
+        ) { rs, _ ->
+            val jsonb = rs.getString("load_factor")
+
+            // TODO parser
+
+            LoadFactor(1, 2, 3, 1)
+        }
+
+    override fun get(id: Long): CoordinatesEntity? {
+        return jdbcTemplate.queryForObject(
+            "SELECT id, latitude, longitude, connections, load_factor FROM coordinates WHERE id = $id"
+        ) { rs, _ ->
+            CoordinatesEntity(
+                id = rs.getLong("id"),
+                latitude = rs.getBigDecimal("latitude"),
+                longitude = rs.getBigDecimal("longitude"),
+                connections = rs.getString("connections"),
+                loadFactor = rs.getString("load_factor")
+            )
+        }
     }
 }

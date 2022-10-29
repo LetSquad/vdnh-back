@@ -36,10 +36,12 @@ class PlaceMapper(
         placement = placeEntity.placement,
         visitTime = Duration.ofMinutes(placeEntity.visitTimeMinutes.toLong()),
 
-        coordinates = LocationCoordinates(
+        coordinates = Coordinates(
             id = placeEntity.coordinates.id,
             latitude = placeEntity.coordinates.latitude,
             longitude = placeEntity.coordinates.longitude,
+            connections = listOf(), // TODO
+            loadFactor = mapOf() // TODO
         ),
 
         type = LocationType(

@@ -12,9 +12,10 @@ class RouteMapper(private val mapper: ObjectMapper) {
     fun coordinatesEntityToNodeDomain(coordinates: CoordinatesEntity): RouteNode {
         return RouteNode(
             coordinatesId = coordinates.id,
-            latitude = coordinates.latitude,
-            longitude = coordinates.longitude,
+            latitude = coordinates.latitude!!, // TODO ?
+            longitude = coordinates.longitude!!, // TODO ?
             connectedCoordinatesId = coordinates.connections?.let { mapper.readValue(it) } ?: emptyList()
         )
     }
+
 }

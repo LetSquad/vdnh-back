@@ -22,6 +22,7 @@ class CoordinatesMapper(private val mapper: ObjectMapper) {
     )
 
     fun domainToDTO(coordinate: Coordinates) = CoordinateDTO(
+        id = coordinate.id,
         latitude = coordinate.latitude,
         longitude = coordinate.longitude
     )

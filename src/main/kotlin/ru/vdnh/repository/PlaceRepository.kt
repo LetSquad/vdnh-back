@@ -10,4 +10,10 @@ interface PlaceRepository {
     fun getPlaceById(id: BigInteger): PlaceEntity
 
     fun getEventsByPlaceId(placeId: Long): List<Long>
+
+    fun getAllActiveWhereSubject(subjectCode: String): List<PlaceEntity>
+
+    fun getByCoordinatesId(coordinatesId: Long): PlaceEntity
+
+    fun existById(id: Long): Boolean
 }
