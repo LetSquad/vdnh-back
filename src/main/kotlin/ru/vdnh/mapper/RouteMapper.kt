@@ -1,12 +1,16 @@
 package ru.vdnh.mapper
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
 import ru.vdnh.model.domain.Route
+import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.entity.CoordinatesEntity
 
 @Component
-class RouteMapper {
+class RouteMapper(private val mapper: ObjectMapper) {
+
     fun entityToDomain(entity: CoordinatesEntity) = Route(
         latitude = entity.latitude,
         longitude = entity.longitude
@@ -16,4 +20,13 @@ class RouteMapper {
         latitude = domain.latitude,
         longitude = domain.longitude
     )
+
+    fun coordinatesEntityToNodeDomain(coordinates: CoordinatesEntity): RouteNode {
+        return RouteNode(
+            coordinatesId = coordinates.id,
+            latitude = coordinates.latitude,
+            longitude = coordinates.longitude,
+            connectedCoordinatesId = coordinates.connections?.let { mapper.readValue(it) } ?: emptyList()
+        )
+    }
 }
