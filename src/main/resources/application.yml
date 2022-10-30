@@ -3,16 +3,6 @@ spring:
     url: 'jdbc:postgresql://localhost:5432/vdnh_back'
     username: 'postgres'
     password: 'postgres'
-    hikari:
-      catalog: 'public'
-  jpa:
-    open-in-view: false
-    properties:
-      hibernate:
-        default_schema: 'public'
-        jdbc:
-          lob:
-            non_contextual_creation: true
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
+springdoc:
+  swagger-ui:
+    path: '/swagger-ui'

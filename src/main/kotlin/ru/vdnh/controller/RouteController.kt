@@ -12,10 +12,11 @@ import ru.vdnh.model.dto.RouteDTOList
 import ru.vdnh.service.RouteService
 import java.math.BigInteger
 
+@Tag(name = "Методы работы с маршрутами")
 @RestController
 @RequestMapping("route")
-@Tag(name = "Методы работы с маршрутами")
 class RouteController(val routeService: RouteService) {
+
     @Operation(
         summary = "Получение готового маршрута",
         description = "Получение готового маршрута по идентификаторам места"
