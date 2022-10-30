@@ -2,22 +2,40 @@ package ru.vdnh.service
 
 import org.springframework.stereotype.Service
 import ru.vdnh.mapper.RouteMapper
+import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.RouteDTOList
 import ru.vdnh.repository.RouteRepository
 import java.math.BigInteger
 
 @Service
-class RouteService(val routeRepository: RouteRepository, val routeMapper: RouteMapper) {
+class RouteService(
+    private val placeService: PlaceService,
+    private val routeRepository: RouteRepository,
+    private val routeMapper: RouteMapper
+) {
 
-    fun findRoutes(idFrom: BigInteger, idTo: BigInteger): RouteDTOList {
-        val routeFrom = routeRepository.findRoute(idFrom)
-            .let { routeMapper.entityToDomain(it) }
-            .let { routeMapper.domainToDTO(it) }
+    val DEFAULT_START_NODE = getNode(BigInteger.valueOf(DEFAULT_ENTER_NODE_ID))
 
-        val routeTo = routeRepository.findRoute(idTo)
-            .let { routeMapper.entityToDomain(it) }
-            .let { routeMapper.domainToDTO(it) }
+    fun getCoordinate(id: BigInteger) = routeRepository.findRoute(id).let { routeMapper.entityToDomain(it) }
 
-        return RouteDTOList(listOf(routeFrom, routeTo))
+    fun getNode(id: BigInteger) = routeRepository.findRoute(id).let { routeMapper.coordinatesEntityToNodeDomain(it) }
+
+    fun getNodeByPlaceId(placeId: Long?): RouteNode? {
+        // TODO не знаю как сделать в котлине это красивше
+        if (placeId == null) {
+            return null
+        }
+
+        val place = placeService.get(placeId)
+        return routeRepository.findRoute(place.coordinatesId.toBigInteger()).let { routeMapper.coordinatesEntityToNodeDomain(it) }
+    }
+
+    fun getDto(id: BigInteger) = getCoordinate(id).let { routeMapper.domainToDTO(it) }
+
+    fun findRoutes(idFrom: BigInteger, idTo: BigInteger) = RouteDTOList(listOf(getDto(idFrom), getDto(idTo)))
+
+    companion object {
+        // центральный павильон
+        val DEFAULT_ENTER_NODE_ID = 80L
     }
 }

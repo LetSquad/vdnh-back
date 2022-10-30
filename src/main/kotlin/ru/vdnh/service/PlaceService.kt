@@ -10,11 +10,12 @@ class PlaceService(
     val placeMapper: PlaceMapper
 ) {
 
+    fun get(id: Long) = placeRepository.get(id).let { placeMapper.entityToDomain(it) }
+
     fun getActivePlacesBySubject(subjectCode: String) =
         placeRepository.getAllActiveWhereSubject(subjectCode).map { placeMapper.entityToDomain(it) }
 
     fun getByCoordinatesId(coordinatesId: Long) =
-        placeRepository.getByCoordinatesId(coordinatesId ?: throw RuntimeException("FUCK"))
-            .let { placeMapper.entityToDomain(it) }
+        placeRepository.getByCoordinatesId(coordinatesId).let { placeMapper.entityToDomain(it) }
 
 }

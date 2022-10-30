@@ -10,31 +10,50 @@ import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.CoordinatesDto
-import ru.vdnh.repository.CoordinatesRepository
+import ru.vdnh.model.dto.NavigateDto
+import java.math.BigInteger
 import java.util.stream.Collectors
 
 
 @Service
 class NavigationService(
+    val routeService: RouteService,
     val graphService: GraphService,
     val placeService: PlaceService,
     val eventService: EventService,
     val priorityService: PriorityService,
 
-    val coordinatesRepository: CoordinatesRepository,
-
     val routeMapper: RouteMapper,
     val locationMapper: LocationMapper
 ) : ApplicationRunner {
 
-    // TODO: enterPlace flag in DB
+    fun getCoordinatesListBySubjects(dto: NavigateDto): List<List<CoordinatesDto>> {
+        // TODO придумать что-то поинтереснее
+        //  например, приоритет по тематикам для не точного деления между ними посещений объектов
+        if (dto.count / dto.subjects.size == 0) {
+            throw RuntimeException("Too many subjects, too few count")
+        }
+
+        return dto.subjects
+            .map {
+                getCoordinatesBySubject(
+                    routeService.getNodeByPlaceId(dto.startPlace),
+                    routeService.getNodeByPlaceId(dto.finishPlace),
+                    it,
+                    dto.count / dto.subjects.size,
+                    dto.loadFactorCheck
+                )
+            }
+    }
+
     fun getCoordinatesBySubject(
-        enterPlace: RouteNode,
+        startPlace: RouteNode?,
+        finishPlace: RouteNode?,
         subjectCode: String,
         number: Int,
-        loadingFactorCheck: Boolean
+        loadFactorCheck: Boolean
     ): List<CoordinatesDto> {
-        log.info("Get list coordinates by subject [$subjectCode] with loadFactor [$loadingFactorCheck]")
+        log.info("Get list coordinates by subject [$subjectCode] with loadFactor [$loadFactorCheck]")
 
         val locationsBySubject = mutableListOf<Location>()
         locationsBySubject.addAll(placeService.getActivePlacesBySubject(subjectCode)
@@ -46,7 +65,7 @@ class NavigationService(
         )
 
         val locationsWithPriority = locationsBySubject.stream()
-            .map { Pair<Location, Int>(it, priorityService.getPriority(it, loadingFactorCheck)) }
+            .map { Pair<Location, Int>(it, priorityService.getPriority(it, loadFactorCheck)) }
             .collect(Collectors.toList())
 
         locationsWithPriority.sortByDescending { it.second }
@@ -55,25 +74,23 @@ class NavigationService(
             .map { it.first }
             .collect(Collectors.toList())
 
-        return sortByDistance(listN, enterPlace)
+        return sortByDistance(listN, startPlace, finishPlace)
     }
 
-    fun sortByDistance(locations: List<Location>, enterPlace: RouteNode): List<CoordinatesDto> {
+    fun sortByDistance(
+        locations: List<Location>,
+        startPlace: RouteNode?,
+        finishPlace: RouteNode?
+    ): List<CoordinatesDto> {
         val listCoordinates = locations.stream()
-            .map {
-                val coordinatesId = it.coordinatesId
-                coordinatesRepository.get(coordinatesId)
-                    .let {
-                        routeMapper
-                            .coordinatesEntityToNodeDomain(it ?: throw RuntimeException("Coordinates by id $coordinatesId not found"))
-                    }
-            }
+            .map { routeService.getNode(BigInteger.valueOf(it.coordinatesId)) }
             .collect(Collectors.toList())
 
         val graph = graphService.createUndirectedWeightGraph(listCoordinates)
 
         val result = mutableListOf<CoordinatesDto>()
-        ClosestFirstIterator(graph, enterPlace).forEach {
+        // TODO: update alg and add finishPlace
+        ClosestFirstIterator(graph, startPlace ?: routeService.DEFAULT_START_NODE).forEach {
             result.add(routeMapper.nodeDomainToCoordinates(it))
 
             // TODO: test (work only on places)
@@ -85,22 +102,15 @@ class NavigationService(
 
     // TODO: test
     override fun run(args: ApplicationArguments?) {
-        // центральный павильон
-        val enter = coordinatesRepository.get(80)
-            .let {
-                routeMapper.coordinatesEntityToNodeDomain(
-                    it ?: throw RuntimeException("Coordinates by id not found")
-                )
-            }
-
-
         val test = getCoordinatesBySubject(
-            enter,
+            routeService.DEFAULT_START_NODE,
+            null,
             "TEST",
             13,
             false
         )
 
+        log.info("$test")
     }
 
     companion object {
