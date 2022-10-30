@@ -12,9 +12,9 @@ import ru.vdnh.model.dto.EventDTO
 import ru.vdnh.service.EventService
 import java.math.BigInteger
 
+@Tag(name = "Методы работы с событиями")
 @RestController
 @RequestMapping("event")
-@Tag(name = "Методы работы с событиями")
 class EventController(val eventService: EventService) {
     @Operation(
         summary = "Получение события по его идентификатору"
