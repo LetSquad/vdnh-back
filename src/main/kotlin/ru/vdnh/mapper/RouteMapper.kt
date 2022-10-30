@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
 import ru.vdnh.model.domain.Route
 import ru.vdnh.model.domain.RouteNode
+import ru.vdnh.model.dto.CoordinatesDto
 import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.entity.CoordinatesEntity
 
@@ -29,4 +30,12 @@ class RouteMapper(private val mapper: ObjectMapper) {
             connectedCoordinatesId = coordinates.connections?.let { mapper.readValue(it) } ?: emptyList()
         )
     }
+
+    fun nodeDomainToCoordinates(routeNode: RouteNode): CoordinatesDto {
+        return CoordinatesDto(
+            latitude = routeNode.latitude,
+            longitude = routeNode.longitude,
+        )
+    }
+
 }

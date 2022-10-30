@@ -7,7 +7,10 @@ import ru.vdnh.repository.EventRepository
 import java.math.BigInteger
 
 @Service
-class EventService(val eventRepository: EventRepository, val eventMapper: EventMapper) {
+class EventService(
+    val eventRepository: EventRepository,
+    val eventMapper: EventMapper
+) {
     fun findEvent(id: BigInteger): EventDTO {
         return eventRepository.findEvent(id)
             .let { eventMapper.entityToDomain(it) }
@@ -20,6 +23,6 @@ class EventService(val eventRepository: EventRepository, val eventMapper: EventM
             .map { eventMapper.domainToDTO(it) }
     }
 
-    fun getEventsBySubject(subjectCode: String) =
-        eventRepository.getAllWhereSubjectCode(subjectCode).map { eventMapper.entityToDomain(it) }
+    fun getActiveEventsBySubject(subjectCode: String) =
+        eventRepository.getAllActiveWhereSubjectCode(subjectCode).map { eventMapper.entityToDomain(it) }
 }

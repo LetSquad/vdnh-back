@@ -32,4 +32,18 @@ class CoordinatesJdbc(private val jdbcTemplate: JdbcTemplate) : CoordinatesRepos
 
             LoadFactor(1, 2, 3, 1)
         }
+
+    override fun get(id: Long): CoordinatesEntity? {
+        return jdbcTemplate.queryForObject(
+            "SELECT id, latitude, longitude, connections, load_factor FROM coordinates WHERE id = $id"
+        ) { rs, _ ->
+            CoordinatesEntity(
+                id = rs.getLong("id"),
+                latitude = rs.getBigDecimal("latitude"),
+                longitude = rs.getBigDecimal("longitude"),
+                connections = rs.getString("connections"),
+                loadFactor = rs.getString("load_factor")
+            )
+        }
+    }
 }

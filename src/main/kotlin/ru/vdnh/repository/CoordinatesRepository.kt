@@ -8,4 +8,6 @@ interface CoordinatesRepository {
     fun getAllCoordinates(): List<CoordinatesEntity>
 
     fun getLoadFactorByCoordinateId(id: Long): LoadFactor
+
+    fun get(id: Long): CoordinatesEntity?
 }
