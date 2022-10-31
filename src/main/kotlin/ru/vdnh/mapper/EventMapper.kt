@@ -4,20 +4,30 @@ import org.springframework.stereotype.Component
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.dto.EventDTO
 import ru.vdnh.model.entity.EventEntity
+import java.time.Duration
 
 @Component
-class EventMapper {
+class EventMapper(private val coordinatesMapper: CoordinatesMapper) {
+
     fun entityToDomain(entity: EventEntity) = Event(
         id = entity.id,
         title = entity.title,
         titleEn = entity.titleEn,
         titleCn = entity.titleCn,
         priority = entity.priority,
+        visitTime = Duration.ofMinutes(entity.visitTimeMinutes.toLong()),
+        placement = entity.placement,
+        paymentConditions = entity.paymentConditions,
         url = entity.url,
         imageUrl = entity.imageUrl,
-        coordinatesId = entity.coordinatesId,
+        isActive = entity.isActive,
+        startDate = entity.startDate,
+        finishDate = entity.finishDate,
         typeCode = entity.typeCode,
-        subjectCode = entity.subjectCode
+        subjectCode = entity.subjectCode,
+        coordinates = entity.coordinates?.let { coordinatesMapper.entityToLocationDomain(it) },
+        schedule = null,
+        createdAt = entity.createdAt.toInstant()
     )
 
     fun domainToDTO(domain: Event) = EventDTO(
@@ -28,7 +38,7 @@ class EventMapper {
         priority = domain.priority,
         url = domain.url,
         imageUrl = domain.imageUrl,
-        coordinatesId = domain.coordinatesId,
+        coordinatesId = domain.coordinates?.id,
         typeCode = domain.typeCode,
         subjectCode = domain.subjectCode
     )

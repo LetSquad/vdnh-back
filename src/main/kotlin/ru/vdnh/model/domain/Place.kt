@@ -2,11 +2,10 @@ package ru.vdnh.model.domain
 
 import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
-import java.sql.Date
 import java.time.Duration
 import java.time.Instant
 
-data class Event(
+data class Place(
     val id: Long,
     val title: String,
     val titleEn: String?,
@@ -17,11 +16,10 @@ data class Event(
     val paymentConditions: PaymentConditions,
     val url: String,
     val imageUrl: String?,
+    val ticketsUrl: String?,
     val isActive: Boolean,
-    val startDate: Date?,
-    val finishDate: Date?,
 
-    val coordinates: LocationCoordinates?,
+    val coordinates: LocationCoordinates,
     val schedule: Schedule?,
 
     val typeCode: String,
