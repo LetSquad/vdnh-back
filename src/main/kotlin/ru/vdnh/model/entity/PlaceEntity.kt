@@ -9,7 +9,7 @@ data class PlaceEntity(
     val title: String,
     val titleEn: String?,
     val titleCn: String?,
-    val priority: Int?,
+    val priority: Int,
     val visitTimeMinutes: Int,
     val placement: LocationPlacement,
     val paymentConditions: PaymentConditions,
