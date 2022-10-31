@@ -1,6 +1,6 @@
 package ru.vdnh.model.dto
 
-data class NavigateDto(
+data class FastNavigationRequestDTO(
     val startPlace: Long?,
     val finishPlace: Long?,
     val count: Int,

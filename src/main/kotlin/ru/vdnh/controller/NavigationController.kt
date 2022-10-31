@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 import ru.vdnh.model.dto.CoordinatesDto
-import ru.vdnh.model.dto.NavigateDto
+import ru.vdnh.model.dto.FastNavigationRequestDTO
 import ru.vdnh.service.NavigationService
 
 @RestController
@@ -24,8 +24,9 @@ class NavigationController(
             ApiResponse(responseCode = "200", description = "Successful Operation")
         ]
     )
-    @PostMapping("by_subjects")
-    fun navigateBySubjectsAndLoadFactors(@RequestBody dto: NavigateDto): List<List<CoordinatesDto>> =
+    // TODO сделать дто вместо возврата списка
+    @PostMapping("fast")
+    fun navigateBySubjectsAndLoadFactors(@RequestBody dto: FastNavigationRequestDTO): List<List<CoordinatesDto>> =
         navigationService.getCoordinatesListBySubjects(dto)
 
 }

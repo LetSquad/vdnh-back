@@ -10,7 +10,7 @@ import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.CoordinatesDto
-import ru.vdnh.model.dto.NavigateDto
+import ru.vdnh.model.dto.FastNavigationRequestDTO
 import java.math.BigInteger
 import java.util.stream.Collectors
 
@@ -27,10 +27,10 @@ class NavigationService(
     val locationMapper: LocationMapper
 ) : ApplicationRunner {
 
-    fun getCoordinatesListBySubjects(dto: NavigateDto): List<List<CoordinatesDto>> {
-        // TODO придумать что-то поинтереснее
-        //  например, приоритет по тематикам для не точного деления между ними посещений объектов
+    fun getCoordinatesListBySubjects(dto: FastNavigationRequestDTO): List<List<CoordinatesDto>> {
+        // TODO единый маршрут с разными тематиками (проставление тематики точки)
         if (dto.count / dto.subjects.size == 0) {
+            // TODO сделать кастомные исключения
             throw RuntimeException("Too many subjects, too few count")
         }
 
@@ -57,11 +57,11 @@ class NavigationService(
 
         val locationsBySubject = mutableListOf<Location>()
         locationsBySubject.addAll(placeService.getActivePlacesBySubject(subjectCode)
-            .map { locationMapper.toLocation(it) }
+            .map { locationMapper.placeToLocation(it) }
         )
         // TODO сделать фильтрацию событий по привязке к месту
         locationsBySubject.addAll(eventService.getActiveEventsBySubject(subjectCode)
-            .map { locationMapper.toLocation(it) }
+            .map { locationMapper.eventToLocation(it) }
         )
 
         val locationsWithPriority = locationsBySubject.stream()

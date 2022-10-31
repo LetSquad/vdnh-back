@@ -10,13 +10,15 @@ import ru.vdnh.model.domain.Place
 @Component
 class LocationMapper {
 
-    fun toLocation(domain: Place) = Location(
+    fun placeToLocation(domain: Place) = Location(
+        id = domain.id,
         priority = domain.priority,
         type = LocationType.PLACE,
         coordinatesId = domain.coordinatesId
     )
 
-    fun toLocation(domain: Event) = Location(
+    fun eventToLocation(domain: Event) = Location(
+        id = domain.id,
         priority = domain.priority,
         type = LocationType.EVENT,
         coordinatesId = domain.coordinatesId ?: 0 // TODO

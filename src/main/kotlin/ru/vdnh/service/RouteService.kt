@@ -21,7 +21,6 @@ class RouteService(
     fun getNode(id: BigInteger) = routeRepository.findRoute(id).let { routeMapper.coordinatesEntityToNodeDomain(it) }
 
     fun getNodeByPlaceId(placeId: Long?): RouteNode? {
-        // TODO не знаю как сделать в котлине это красивше
         if (placeId == null) {
             return null
         }
