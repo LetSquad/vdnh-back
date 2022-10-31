@@ -2,8 +2,8 @@ package ru.vdnh.model.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-@Schema(description = "Event model")
-data class EventDTO(
+@Schema(description = "Place model")
+data class PlaceDTO(
     val id: Long,
     val type: String,
     val geometry: GeometryDTO,

@@ -6,8 +6,8 @@ import java.time.LocalTime
 
 data class Coordinates(
     val id: Long,
-    val latitude: BigDecimal,
-    val longitude: BigDecimal,
+    val latitude: BigDecimal?,
+    val longitude: BigDecimal?,
     val connections: List<Long>,
     val loadFactor: Map<DayOfWeek, Map<LocalTime, Double>>
 )

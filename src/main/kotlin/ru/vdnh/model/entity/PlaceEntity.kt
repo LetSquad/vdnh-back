@@ -19,6 +19,7 @@ data class PlaceEntity(
     val isActive: Boolean,
 
     val coordinates: CoordinatesEntity,
+    val type: LocationTypeEntity,
     val schedule: ScheduleEntity?,
 
     val typeCode: String,

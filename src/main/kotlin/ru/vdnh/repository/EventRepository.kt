@@ -1,11 +1,12 @@
 package ru.vdnh.repository
 
-import org.springframework.data.jdbc.repository.query.Query
-import org.springframework.data.repository.CrudRepository
 import ru.vdnh.model.entity.EventEntity
 import java.math.BigInteger
 
-interface EventRepository : CrudRepository<EventEntity, BigInteger> {
-    @Query("select * from event where id = :id")
+interface EventRepository {
     fun findEvent(id: BigInteger): EventEntity
+
+    fun getAllEvents(): List<EventEntity>
+
+    fun getPlacesByEventId(eventId: Long): List<Long>
 }

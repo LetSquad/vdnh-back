@@ -11,7 +11,7 @@ data class Event(
     val title: String,
     val titleEn: String?,
     val titleCn: String?,
-    val priority: Int?,
+    val priority: Int,
     val visitTime: Duration,
     val placement: LocationPlacement,
     val paymentConditions: PaymentConditions,
@@ -22,10 +22,12 @@ data class Event(
     val finishDate: Date?,
 
     val coordinates: LocationCoordinates?,
+    val type: LocationType,
     val schedule: Schedule?,
 
     val typeCode: String,
     val subjectCode: String?,
 
-    val createdAt: Instant
+    val createdAt: Instant,
+    val places: List<Long>?
 )

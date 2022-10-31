@@ -1,0 +1,20 @@
+package ru.vdnh.model.dto
+
+import io.swagger.v3.oas.annotations.media.Schema
+import ru.vdnh.model.enums.CategoryType
+
+@Schema(description = "Property model")
+data class PropertyDTO(
+    val category: CategoryType,
+    val isVisible: Boolean,
+    val zoom: Double?,
+    val color: String,
+    val title: Map<String, String?>,
+    val shortTitle: Map<String, String?>,
+    val type: Map<String, String?>,
+    val icon: String,
+    val url: String,
+    val pic: String?,
+    val places: List<Long>?,
+    val events: List<Long>?
+)

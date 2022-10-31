@@ -2,22 +2,30 @@ package ru.vdnh.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import ru.vdnh.model.domain.Coordinates
 import ru.vdnh.model.domain.LocationCoordinates
+import ru.vdnh.model.dto.CoordinateDTO
 import ru.vdnh.model.dto.HeatmapCoordinatesDTO
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.model.entity.CoordinatesEntity
+import java.sql.ResultSet
 import java.time.DayOfWeek
 import java.time.LocalTime
 
 @Component
-class CoordinatesMapper(private val mapper: ObjectMapper) {
+class CoordinatesMapper(private val mapper: ObjectMapper) : RowMapper<CoordinatesEntity> {
 
     fun domainListToHeatmapDTO(coordinates: List<Coordinates>, day: DayOfWeek, time: LocalTime) = HeatmapDTO(
         day = day,
         time = time,
         heatmap = coordinates.mapNotNull { domainToHeatmapDTO(it, day, time) }
+    )
+
+    fun domainToDTO(coordinate: Coordinates) = CoordinateDTO(
+        latitude = coordinate.latitude,
+        longitude = coordinate.longitude
     )
 
     fun entityToDomain(coordinates: CoordinatesEntity) = Coordinates(
@@ -49,4 +57,12 @@ class CoordinatesMapper(private val mapper: ObjectMapper) {
             loadFactor = loadFactor
         )
     }
+
+    override fun mapRow(rs: ResultSet, rowNum: Int): CoordinatesEntity = CoordinatesEntity(
+        id = rs.getLong("coordinates_id"),
+        latitude = rs.getBigDecimal("latitude"),
+        longitude = rs.getBigDecimal("longitude"),
+        connections = rs.getString("connections"),
+        loadFactor = rs.getString("load_factor")
+    )
 }

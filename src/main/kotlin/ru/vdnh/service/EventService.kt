@@ -9,14 +9,10 @@ import java.math.BigInteger
 @Service
 class EventService(val eventRepository: EventRepository, val eventMapper: EventMapper) {
     fun findEvent(id: BigInteger): EventDTO {
-        return eventRepository.findEvent(id)
-            .let { eventMapper.entityToDomain(it) }
+        val event = eventRepository.findEvent(id)
+        val places = eventRepository.getPlacesByEventId(event.id)
+        return event
+            .let { eventMapper.entityToDomain(it, places) }
             .let { eventMapper.domainToDTO(it) }
-    }
-
-    fun getAll(): List<EventDTO> {
-        return eventRepository.findAll()
-            .map { eventMapper.entityToDomain(it) }
-            .map { eventMapper.domainToDTO(it) }
     }
 }
