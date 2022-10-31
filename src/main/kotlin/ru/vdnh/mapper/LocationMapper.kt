@@ -14,13 +14,13 @@ class LocationMapper {
         id = domain.id,
         priority = domain.priority,
         type = LocationType.PLACE,
-        coordinatesId = domain.coordinatesId
+        coordinatesId = domain.coordinates.id
     )
 
     fun eventToLocation(domain: Event) = Location(
         id = domain.id,
         priority = domain.priority,
         type = LocationType.EVENT,
-        coordinatesId = domain.coordinatesId ?: 0 // TODO
+        coordinatesId = domain.coordinates?.id ?: 0 // TODO
     )
 }

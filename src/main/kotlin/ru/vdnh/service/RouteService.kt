@@ -26,7 +26,7 @@ class RouteService(
         }
 
         val place = placeService.get(placeId)
-        return routeRepository.findRoute(place.coordinatesId.toBigInteger()).let { routeMapper.coordinatesEntityToNodeDomain(it) }
+        return routeRepository.findRoute(place.coordinates.id.toBigInteger()).let { routeMapper.coordinatesEntityToNodeDomain(it) }
     }
 
     fun getDto(id: BigInteger) = getCoordinate(id).let { routeMapper.domainToDTO(it) }

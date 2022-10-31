@@ -25,5 +25,6 @@ data class Place(
     val typeCode: String,
     val subjectCode: String?,
 
+    // TODO зачем?
     val createdAt: Instant
 )

@@ -33,6 +33,7 @@ class RouteMapper(private val mapper: ObjectMapper) {
 
     fun nodeDomainToCoordinates(routeNode: RouteNode): CoordinatesDto {
         return CoordinatesDto(
+            id = routeNode.coordinatesId,
             latitude = routeNode.latitude,
             longitude = routeNode.longitude,
         )
