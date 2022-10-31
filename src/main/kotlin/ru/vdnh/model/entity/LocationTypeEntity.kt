@@ -5,5 +5,6 @@ data class LocationTypeEntity(
     val name: String,
     val nameEn: String,
     val nameCn: String?,
-    val iconCode: String
+    val iconCode: String,
+    val iconColor: String
 )
