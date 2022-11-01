@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.vdnh.model.dto.CoordinateDTOList
 import ru.vdnh.model.dto.HeatmapDTO
-import ru.vdnh.model.dto.PlaceXEventDTOList
+import ru.vdnh.model.dto.MapDataDTO
 import ru.vdnh.service.CoordinatesService
 import ru.vdnh.service.MapService
 import java.math.BigInteger
@@ -44,8 +44,8 @@ class MapController(
         summary = "Получение событий и мест",
         description = "Получение событий и мест в определенном формате для отображения на карте"
     )
-    @GetMapping("/eventsXplaces")
-    fun getEventsAndPlaces(): PlaceXEventDTOList {
+    @GetMapping("/data")
+    fun getEventsAndPlaces(): MapDataDTO {
         return mapService.getEventsAndPlaces()
     }
 }

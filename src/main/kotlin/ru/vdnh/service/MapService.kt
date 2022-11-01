@@ -1,9 +1,10 @@
 package ru.vdnh.service
 
 import org.springframework.stereotype.Service
+import ru.vdnh.getLogger
 import ru.vdnh.mapper.EventMapper
 import ru.vdnh.mapper.PlaceMapper
-import ru.vdnh.model.dto.PlaceXEventDTOList
+import ru.vdnh.model.dto.MapDataDTO
 
 @Service
 class MapService(
@@ -13,13 +14,17 @@ class MapService(
     private val placeMapper: PlaceMapper
 ) {
 
-    fun getEventsAndPlaces(): PlaceXEventDTOList {
+    fun getEventsAndPlaces(): MapDataDTO {
         val events = eventService.getAllEvents()
             .map { eventMapper.domainToDTO(it) }
 
         val places = placesService.getAllPlaces()
             .map { placeMapper.domainToDto(it) }
 
-        return PlaceXEventDTOList(listOf(places, events))
+        return MapDataDTO(listOf(places, events))
+    }
+
+    companion object {
+        private val log = getLogger<MapService>()
     }
 }
