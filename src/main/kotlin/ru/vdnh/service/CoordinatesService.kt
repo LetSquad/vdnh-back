@@ -2,8 +2,10 @@ package ru.vdnh.service
 
 import org.springframework.stereotype.Service
 import ru.vdnh.mapper.CoordinatesMapper
+import ru.vdnh.model.dto.CoordinateDTOList
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.repository.CoordinatesRepository
+import java.math.BigInteger
 import java.time.DayOfWeek
 import java.time.LocalTime
 
@@ -24,6 +26,18 @@ class CoordinatesService(
         return coordinatesRepository.getAllCoordinates()
             .map { coordinatesMapper.entityToDomain(it) }
             .let { coordinatesMapper.domainListToHeatmapDTO(it, day, LocalTime.of(hour, 0)) }
+    }
+
+    fun findRoutes(idFrom: BigInteger, idTo: BigInteger): CoordinateDTOList {
+        val coordinateFrom = coordinatesRepository.getCoordinatesById(idFrom)
+            .let { coordinatesMapper.entityToDomain(it) }
+            .let { coordinatesMapper.domainToDTO(it) }
+
+        val coordinateTo = coordinatesRepository.getCoordinatesById(idTo)
+            .let { coordinatesMapper.entityToDomain(it) }
+            .let { coordinatesMapper.domainToDTO(it) }
+
+        return CoordinateDTOList(listOf(coordinateFrom, coordinateTo))
     }
 
     companion object {

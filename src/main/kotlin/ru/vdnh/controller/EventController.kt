@@ -28,17 +28,4 @@ class EventController(val eventService: EventService) {
     fun findEvent(@PathVariable id: BigInteger): EventDTO {
         return eventService.findEvent(id)
     }
-
-    @Operation(
-        summary = "Получение всех событий"
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Successful Operation")
-        ]
-    )
-    @GetMapping
-    fun getAll(): List<EventDTO> {
-        return eventService.getAll()
-    }
 }

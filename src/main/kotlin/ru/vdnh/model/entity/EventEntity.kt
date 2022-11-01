@@ -24,6 +24,7 @@ data class EventEntity(
     val finishDate: Date?,
 
     val coordinates: CoordinatesEntity?,
+    val type: LocationTypeEntity,
     val schedule: ScheduleEntity?,
 
     val typeCode: String,

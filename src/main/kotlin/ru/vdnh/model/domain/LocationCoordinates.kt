@@ -4,6 +4,6 @@ import java.math.BigDecimal
 
 data class LocationCoordinates(
     val id: Long,
-    val latitude: BigDecimal,
-    val longitude: BigDecimal
+    val latitude: BigDecimal?,
+    val longitude: BigDecimal?
 )

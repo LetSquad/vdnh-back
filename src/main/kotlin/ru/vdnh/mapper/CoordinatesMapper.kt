@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
 import ru.vdnh.model.domain.Coordinates
 import ru.vdnh.model.domain.LocationCoordinates
+import ru.vdnh.model.dto.CoordinateDTO
 import ru.vdnh.model.dto.HeatmapCoordinatesDTO
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.model.entity.CoordinatesEntity
@@ -18,6 +19,11 @@ class CoordinatesMapper(private val mapper: ObjectMapper) {
         day = day,
         time = time,
         heatmap = coordinates.mapNotNull { domainToHeatmapDTO(it, day, time) }
+    )
+
+    fun domainToDTO(coordinate: Coordinates) = CoordinateDTO(
+        latitude = coordinate.latitude,
+        longitude = coordinate.longitude
     )
 
     fun entityToDomain(coordinates: CoordinatesEntity) = Coordinates(
