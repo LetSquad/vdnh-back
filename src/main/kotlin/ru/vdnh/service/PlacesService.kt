@@ -1,40 +1,27 @@
 package ru.vdnh.service
 
 import org.springframework.stereotype.Service
-import ru.vdnh.mapper.EventMapper
 import ru.vdnh.mapper.PlaceMapper
+import ru.vdnh.model.domain.Place
 import ru.vdnh.model.dto.PlaceDTO
-import ru.vdnh.model.dto.PlaceDTOList
-import ru.vdnh.repository.EventRepository
+import ru.vdnh.model.entity.PlaceEntity
 import ru.vdnh.repository.PlacesRepository
 import java.math.BigInteger
 
 @Service
 class PlacesService(
     private val placesRepository: PlacesRepository,
-    private val placeMapper: PlaceMapper,
-    private val eventRepository: EventRepository,
-    private val eventMapper: EventMapper
+    private val placeMapper: PlaceMapper
 ) {
 
-    fun getAll(): PlaceDTOList {
-        val places = placesRepository.getAllPlaces()
-        val mergedPlacesEventsList = mutableListOf<Any>()
-        for (place in places) {
-            val eventsByPlaceId = placesRepository.getEventsByPlaceId(place.id)
-            val entityToDomain = placeMapper.entityToDomain(place, eventsByPlaceId)
-            mergedPlacesEventsList.add(placeMapper.domainToDto(entityToDomain))
+    fun getAllPlaces(): List<Place> {
+        val placeEntities: List<PlaceEntity> = placesRepository.getAllPlaces()
+        val placeDomainList = mutableListOf<Place>()
+        for (place in placeEntities) {
+            val eventsByPlaceId: List<Long> = placesRepository.getEventsByPlaceId(place.id)
+            placeDomainList.add(placeMapper.entityToDomain(place, eventsByPlaceId))
         }
-
-        val events = eventRepository.getAllEvents()
-        for (event in events) {
-            val placesByEventId = eventRepository.getPlacesByEventId(event.id)
-            val entityToDomain = eventMapper.entityToDomain(event, placesByEventId)
-            mergedPlacesEventsList.add(eventMapper.domainToDTO(entityToDomain))
-        }
-
-
-        return PlaceDTOList(mergedPlacesEventsList)
+        return placeDomainList
     }
 
     fun getPlaceById(id: BigInteger): PlaceDTO {
