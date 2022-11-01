@@ -2,14 +2,14 @@ package ru.vdnh.repository
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
-import ru.vdnh.mapper.PlaceMapper
 import ru.vdnh.model.entity.PlaceEntity
+import ru.vdnh.repository.mapper.PlaceRowMapper
 import java.math.BigInteger
 
 @Repository
 class PlacesJdbc(
     private val jdbcTemplate: JdbcTemplate,
-    private val placeMapper: PlaceMapper
+    private val placeRowMapper: PlaceRowMapper
 ) : PlacesRepository {
 
     override fun getAllPlaces(): List<PlaceEntity> {
@@ -22,7 +22,7 @@ class PlacesJdbc(
                     "s.saturday, s.sunday, s.additional_info, lt.name, lt.name_en, lt.name_cn, lt.icon_code, lt.icon_color FROM place p " +
                     "LEFT JOIN coordinates c on p.coordinates_id = c.id " +
                     "LEFT JOIN schedule s on p.schedule_id = s.id " +
-                    "LEFT JOIN location_type lt on p.type_code = lt.code", placeMapper
+                    "LEFT JOIN location_type lt on p.type_code = lt.code where p.is_active = true", placeRowMapper
         )
     }
 
@@ -37,7 +37,7 @@ class PlacesJdbc(
                     "LEFT JOIN coordinates c on p.coordinates_id = c.id " +
                     "LEFT JOIN schedule s on p.schedule_id = s.id " +
                     "LEFT JOIN location_type lt on p.type_code = lt.code " +
-                    "where p.id = ?", placeMapper,
+                    "where p.id = ?", placeRowMapper,
             id
         )!!
     }

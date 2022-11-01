@@ -1,4 +1,4 @@
-package ru.vdnh.mapper
+package ru.vdnh.repository.mapper
 
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
@@ -6,7 +6,7 @@ import ru.vdnh.model.entity.ScheduleEntity
 import java.sql.ResultSet
 
 @Component
-class ScheduleMapper : RowMapper<ScheduleEntity> {
+class ScheduleRowMapper : RowMapper<ScheduleEntity> {
 
     override fun mapRow(rs: ResultSet, rowNum: Int): ScheduleEntity = ScheduleEntity(
         id = rs.getLong("schedule_id"),
