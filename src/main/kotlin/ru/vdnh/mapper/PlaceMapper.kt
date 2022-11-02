@@ -3,8 +3,8 @@ package ru.vdnh.mapper
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
-import ru.vdnh.model.VdnhConstants.GEOMETRY_MAP_TYPE
-import ru.vdnh.model.VdnhConstants.PLACE_MAP_TYPE
+import ru.vdnh.model.VdnhConstants.GEOMETRY_TYPE_FEATURE
+import ru.vdnh.model.VdnhConstants.GEOMETRY_TYPE_POINT
 import ru.vdnh.model.domain.Coordinates
 import ru.vdnh.model.domain.LocationType
 import ru.vdnh.model.domain.Place
@@ -59,9 +59,9 @@ class PlaceMapper(
 
     fun domainToDto(place: Place): PlaceDTO = PlaceDTO(
         id = place.id,
-        type = PLACE_MAP_TYPE,
+        type = GEOMETRY_TYPE_FEATURE,
         geometry = GeometryDTO(
-            type = GEOMETRY_MAP_TYPE,
+            type = GEOMETRY_TYPE_POINT,
             coordinates = listOf(place.coordinates.longitude, place.coordinates.latitude)
         ),
 

@@ -9,6 +9,7 @@ import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.repository.CoordinatesRepository
 import java.math.BigInteger
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalTime
 
 @Service
@@ -18,17 +19,18 @@ class CoordinatesService(
     private val coordinatesRepository: CoordinatesRepository
 ) {
 
-    fun getHeatmap(day: DayOfWeek, time: String): HeatmapDTO {
-        val parsedTime = LocalTime.parse(time)
+    fun getHeatmap(day: DayOfWeek?, time: String?): HeatmapDTO {
+        val parsedTime = time?.let { LocalTime.parse(time) } ?: LocalTime.now()
         val hour: Int = if (parsedTime.minute < HALF_OF_HOUR || parsedTime.hour == LAST_HOUR) {
             parsedTime.hour
         } else {
             parsedTime.hour + 1
         }
 
+        val dayOfHeatmap: DayOfWeek = day ?: LocalDate.now().dayOfWeek
         return coordinatesRepository.getAllCoordinates()
             .map { coordinatesMapper.entityToDomain(it) }
-            .let { coordinatesMapper.domainListToHeatmapDTO(it, day, LocalTime.of(hour, 0)) }
+            .let { coordinatesMapper.domainListToHeatmapDTO(it, dayOfHeatmap, LocalTime.of(hour, 0)) }
     }
 
     fun getRouteNodeByCoordinateId(id: BigInteger): RouteNode =

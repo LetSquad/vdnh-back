@@ -3,8 +3,8 @@ package ru.vdnh.mapper
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
-import ru.vdnh.model.VdnhConstants.GEOMETRY_MAP_TYPE
-import ru.vdnh.model.VdnhConstants.PLACE_MAP_TYPE
+import ru.vdnh.model.VdnhConstants.GEOMETRY_TYPE_POINT
+import ru.vdnh.model.VdnhConstants.GEOMETRY_TYPE_FEATURE
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.LocationType
 import ru.vdnh.model.domain.Place
@@ -52,9 +52,9 @@ class EventMapper(
 
     fun domainToDTO(event: Event) = EventDTO(
         id = event.id,
-        type = PLACE_MAP_TYPE,
+        type = GEOMETRY_TYPE_FEATURE,
         geometry = GeometryDTO(
-            type = GEOMETRY_MAP_TYPE,
+            type = GEOMETRY_TYPE_POINT,
             coordinates = listOf(event.coordinates!!.longitude, event.coordinates.latitude)
         ),
 

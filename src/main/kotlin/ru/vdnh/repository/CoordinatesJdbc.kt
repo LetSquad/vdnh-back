@@ -28,20 +28,20 @@ class CoordinatesJdbc(
 
     override fun get(id: Long): CoordinatesEntity? {
         return jdbcTemplate.queryForObject(
-            "$SQL_SELECT_ENTITY WHERE id = $id"
-        ) { rs, _ ->
-            CoordinatesEntity(
-                id = rs.getLong("id"),
-                latitude = rs.getBigDecimal("latitude"),
-                longitude = rs.getBigDecimal("longitude"),
-                connections = rs.getString("connections"),
-                loadFactor = rs.getString("load_factor")
-            )
-        }
+            "$SQL_SELECT_ENTITY WHERE id = ?",
+            { rs, _ ->
+                CoordinatesEntity(
+                    id = rs.getLong("id"),
+                    latitude = rs.getBigDecimal("latitude"),
+                    longitude = rs.getBigDecimal("longitude"),
+                    connections = rs.getString("connections"),
+                    loadFactor = rs.getString("load_factor")
+                )
+            }, id)
     }
 
     companion object {
-        const val SQL_SELECT_ENTITY = "SELECT id, latitude, longitude, connections, load_factor FROM coordinates"
+        const val SQL_SELECT_ENTITY = "SELECT id coordinates_id, latitude, longitude, connections, load_factor FROM coordinates"
     }
 
 }

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import ru.vdnh.mapper.CoordinatesMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.RouteNode
-import ru.vdnh.model.dto.CoordinateDTO
+import ru.vdnh.model.dto.CoordinatesDTO
 import ru.vdnh.model.dto.DateNavigationDTO
 import ru.vdnh.model.dto.FastNavigationRequestDTO
 import ru.vdnh.model.dto.MapDataDTO
@@ -79,7 +79,7 @@ class NavigationService(
             dto.placeNavigation
         )
 
-        val coordinateDtoList: List<CoordinateDTO> = locationRouteList
+        val coordinateDtoList: List<CoordinatesDTO> = locationRouteList
             .map { coordinatesMapper.domainToDTO(it.coordinates) }
         return MapDataDTO(coordinateDtoList)
     }

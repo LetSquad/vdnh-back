@@ -32,7 +32,7 @@ class MapController(
         description = "Получение тепловой карты по дню недели и времени"
     )
     @GetMapping("/heatmap")
-    fun getHeatmap(@RequestParam day: DayOfWeek, time: String): HeatmapDTO {
+    fun getHeatmap(@RequestParam day: DayOfWeek?, @RequestParam time: String?): HeatmapDTO {
         return coordinatesService.getHeatmap(day, time)
     }
 
