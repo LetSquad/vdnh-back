@@ -7,5 +7,5 @@ data class EventDTO(
     val id: Long,
     val type: String,
     val geometry: GeometryDTO,
-    val property: PropertyDTO
+    val properties: LocationPropertiesDTO
 )

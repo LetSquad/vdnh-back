@@ -21,6 +21,6 @@ class MapService(
         val places = placeService.getAllPlaces()
             .map { placeMapper.domainToDto(it) }
 
-        return MapDataDTO(listOf(places, events))
+        return MapDataDTO(places + events)
     }
 }

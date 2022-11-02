@@ -16,7 +16,7 @@ import java.time.Duration
 @Component
 class PlaceMapper(
     private val mapper: ObjectMapper,
-    private val propertyMapper: PropertyMapper
+    private val locationPropertiesMapper: LocationPropertiesMapper
 ) {
 
     fun entityToDomain(placeEntity: PlaceEntity, events: List<Long>): Place = Place(
@@ -54,7 +54,7 @@ class PlaceMapper(
         ),
 
         schedule = placeEntity.schedule?.let { mapper.readValue(it) },
-        events = events.ifEmpty { null }
+        events = events
     )
 
     fun domainToDto(place: Place): PlaceDTO = PlaceDTO(
@@ -62,9 +62,9 @@ class PlaceMapper(
         type = PLACE_MAP_TYPE,
         geometry = GeometryDTO(
             type = GEOMETRY_MAP_TYPE,
-            coordinates = listOf(place.coordinates.latitude, place.coordinates.longitude)
+            coordinates = listOf(place.coordinates.longitude, place.coordinates.latitude)
         ),
 
-        property = propertyMapper.domainToDto(place)
+        properties = locationPropertiesMapper.domainToDto(place)
     )
 }

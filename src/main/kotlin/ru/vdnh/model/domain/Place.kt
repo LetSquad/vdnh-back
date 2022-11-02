@@ -27,5 +27,5 @@ data class Place(
     val subjectCode: String?,
 
     val createdAt: Instant,
-    val events: List<Long>?
+    val events: List<Long>
 )
