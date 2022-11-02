@@ -51,7 +51,7 @@ class PropertyMapper {
         color = event.type.iconColor,
         url = VDNH_BASE_URL + event.url,
         pic = VDNH_BASE_URL + event.imageUrl,
-        places = event.places,
+        places = if (event.places != null) event.places.map { it.id } else listOf(),
         events = null
     )
 

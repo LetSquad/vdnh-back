@@ -9,4 +9,8 @@ interface EventRepository {
     fun getAllEvents(): List<EventEntity>
 
     fun getPlacesByEventId(eventId: Long): List<Long>
+
+    fun getAllActiveWhereSubjectCode(subjectCode: String): List<EventEntity>
+
+    fun getByCoordinatesId(coordinatesId: Long): EventEntity
 }

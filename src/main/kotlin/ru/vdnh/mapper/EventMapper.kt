@@ -7,9 +7,11 @@ import ru.vdnh.model.VdnhConstants.GEOMETRY_MAP_TYPE
 import ru.vdnh.model.VdnhConstants.PLACE_MAP_TYPE
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.LocationType
+import ru.vdnh.model.domain.Place
 import ru.vdnh.model.dto.EventDTO
 import ru.vdnh.model.dto.GeometryDTO
 import ru.vdnh.model.entity.EventEntity
+import java.math.BigDecimal
 import java.time.Duration
 
 @Component
@@ -19,7 +21,7 @@ class EventMapper(
     private val propertyMapper: PropertyMapper
 ) {
 
-    fun entityToDomain(entity: EventEntity, places: List<Long>) = Event(
+    fun entityToDomain(entity: EventEntity, places: List<Place>) = Event(
         id = entity.id,
         title = entity.title,
         titleEn = entity.titleEn,
@@ -35,7 +37,7 @@ class EventMapper(
         finishDate = entity.finishDate,
         typeCode = entity.typeCode,
         subjectCode = entity.subjectCode,
-        coordinates = entity.coordinates?.let { coordinatesMapper.entityToLocationDomain(it) },
+        coordinates = entity.coordinates?.let { coordinatesMapper.entityToDomain(it) },
         schedule = entity.schedule?.let { mapper.readValue(it) },
         createdAt = entity.createdAt.toInstant(),
         type = LocationType(

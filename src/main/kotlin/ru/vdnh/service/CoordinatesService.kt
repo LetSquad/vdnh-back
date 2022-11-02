@@ -2,6 +2,8 @@ package ru.vdnh.service
 
 import org.springframework.stereotype.Service
 import ru.vdnh.mapper.CoordinatesMapper
+import ru.vdnh.mapper.RouteMapper
+import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.CoordinateDTOList
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.repository.CoordinatesRepository
@@ -12,6 +14,7 @@ import java.time.LocalTime
 @Service
 class CoordinatesService(
     private val coordinatesMapper: CoordinatesMapper,
+    private val routeMapper: RouteMapper,
     private val coordinatesRepository: CoordinatesRepository
 ) {
 
@@ -27,6 +30,10 @@ class CoordinatesService(
             .map { coordinatesMapper.entityToDomain(it) }
             .let { coordinatesMapper.domainListToHeatmapDTO(it, day, LocalTime.of(hour, 0)) }
     }
+
+    fun getRouteNodeByCoordinateId(id: BigInteger): RouteNode =
+        coordinatesRepository.getCoordinatesById(id)
+            .let { routeMapper.coordinatesEntityToNodeDomain(it) }
 
     fun findRoutes(idFrom: BigInteger, idTo: BigInteger): CoordinateDTOList {
         val coordinateFrom = coordinatesRepository.getCoordinatesById(idFrom)

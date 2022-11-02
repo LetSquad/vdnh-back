@@ -20,6 +20,6 @@ class PlaceController(private val placeService: PlaceService) {
     )
     @GetMapping("{id}")
     fun findEvent(@PathVariable id: BigInteger): PlaceDTO {
-        return placeService.getPlaceById(id)
+        return placeService.getPlaceDTOById(id)
     }
 }

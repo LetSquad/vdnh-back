@@ -14,15 +14,34 @@ class CoordinatesJdbc(
 
     override fun getAllCoordinates(): List<CoordinatesEntity> {
         return jdbcTemplate.query(
-            "SELECT id as coordinates_id, latitude, longitude, connections, load_factor FROM coordinates",
+            SQL_SELECT_ENTITY,
             coordinatesRowMapper
         )
     }
 
     override fun getCoordinatesById(id: BigInteger): CoordinatesEntity {
         return jdbcTemplate.queryForObject(
-            "SELECT id as coordinates_id, latitude, longitude, connections, load_factor FROM coordinates where id = ?",
+            "$SQL_SELECT_ENTITY WHERE id = ?",
             coordinatesRowMapper, id
         )!!
     }
+
+    override fun get(id: Long): CoordinatesEntity? {
+        return jdbcTemplate.queryForObject(
+            "$SQL_SELECT_ENTITY WHERE id = $id"
+        ) { rs, _ ->
+            CoordinatesEntity(
+                id = rs.getLong("id"),
+                latitude = rs.getBigDecimal("latitude"),
+                longitude = rs.getBigDecimal("longitude"),
+                connections = rs.getString("connections"),
+                loadFactor = rs.getString("load_factor")
+            )
+        }
+    }
+
+    companion object {
+        const val SQL_SELECT_ENTITY = "SELECT id, latitude, longitude, connections, load_factor FROM coordinates"
+    }
+
 }

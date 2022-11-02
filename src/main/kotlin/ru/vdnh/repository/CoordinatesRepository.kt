@@ -8,4 +8,6 @@ interface CoordinatesRepository {
     fun getAllCoordinates(): List<CoordinatesEntity>
 
     fun getCoordinatesById(id: BigInteger): CoordinatesEntity
+
+    fun get(id: Long): CoordinatesEntity?
 }
