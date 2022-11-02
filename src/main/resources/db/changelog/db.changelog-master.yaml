@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/sql/additional_columns.sql
   - include:
       file: db/changelog/sql/icon_color_column.sql
+  - include:
+      file: db/changelog/sql/update_schedule.sql

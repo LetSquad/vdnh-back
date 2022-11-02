@@ -10,8 +10,7 @@ import java.sql.ResultSet
 
 @Component
 class PlaceRowMapper(
-    private val coordinatesRowMapper: CoordinatesRowMapper,
-    private val scheduleRowMapper: ScheduleRowMapper
+    private val coordinatesRowMapper: CoordinatesRowMapper
 ) : RowMapper<PlaceEntity> {
 
     override fun mapRow(rs: ResultSet, rowNum: Int): PlaceEntity = PlaceEntity(
@@ -30,10 +29,9 @@ class PlaceRowMapper(
         subjectCode = rs.getString("subject_code"),
         paymentConditions = PaymentConditions.valueOf(rs.getString("payment_conditions")),
         placement = LocationPlacement.valueOf(rs.getString("placement")),
+        schedule = rs.getString("schedule"),
 
         coordinates = coordinatesRowMapper.mapRow(rs, rowNum),
-
-        schedule = scheduleRowMapper.mapRow(rs, rowNum),
 
         type = LocationTypeEntity(
             code = rs.getString("type_code"),

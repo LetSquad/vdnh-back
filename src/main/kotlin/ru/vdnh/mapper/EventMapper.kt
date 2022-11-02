@@ -1,5 +1,7 @@
 package ru.vdnh.mapper
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
 import ru.vdnh.model.VdnhConstants.GEOMETRY_MAP_TYPE
 import ru.vdnh.model.VdnhConstants.PLACE_MAP_TYPE
@@ -12,6 +14,7 @@ import java.time.Duration
 
 @Component
 class EventMapper(
+    private val mapper: ObjectMapper,
     private val coordinatesMapper: CoordinatesMapper,
     private val propertyMapper: PropertyMapper
 ) {
@@ -33,7 +36,7 @@ class EventMapper(
         typeCode = entity.typeCode,
         subjectCode = entity.subjectCode,
         coordinates = entity.coordinates?.let { coordinatesMapper.entityToLocationDomain(it) },
-        schedule = null,
+        schedule = entity.schedule?.let { mapper.readValue(it) },
         createdAt = entity.createdAt.toInstant(),
         type = LocationType(
             code = entity.typeCode,
@@ -51,7 +54,7 @@ class EventMapper(
         type = PLACE_MAP_TYPE,
         geometry = GeometryDTO(
             type = GEOMETRY_MAP_TYPE,
-            coordinates = listOf(event.coordinates?.latitude, event.coordinates?.longitude)
+            coordinates = listOf(event.coordinates!!.latitude, event.coordinates.longitude)
         ),
 
         property = propertyMapper.domainToDto(event)

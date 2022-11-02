@@ -3,7 +3,7 @@ package ru.vdnh.repository
 import ru.vdnh.model.entity.PlaceEntity
 import java.math.BigInteger
 
-interface PlacesRepository {
+interface PlaceRepository {
 
     fun getAllPlaces(): List<PlaceEntity>
 

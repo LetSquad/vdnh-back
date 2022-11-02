@@ -10,8 +10,7 @@ import java.sql.ResultSet
 
 @Component
 class EventRowMapper(
-    private val coordinatesRowMapper: CoordinatesRowMapper,
-    private val scheduleRowMapper: ScheduleRowMapper
+    private val coordinatesRowMapper: CoordinatesRowMapper
 ) : RowMapper<EventEntity> {
 
     override fun mapRow(rs: ResultSet, rowNum: Int): EventEntity = EventEntity(
@@ -29,9 +28,13 @@ class EventRowMapper(
         subjectCode = rs.getString("subject_code"),
         paymentConditions = PaymentConditions.valueOf(rs.getString("payment_conditions")),
         placement = LocationPlacement.valueOf(rs.getString("placement")),
+        schedule = rs.getString("schedule"),
 
-        coordinates = coordinatesRowMapper.mapRow(rs, rowNum),
-        schedule = scheduleRowMapper.mapRow(rs, rowNum),
+        coordinates = if (rs.getLongOrNull("coordinates_id") == null) {
+            null
+        } else {
+            coordinatesRowMapper.mapRow(rs, rowNum)
+        },
 
         startDate = rs.getDate("start_date"),
         finishDate = rs.getDate("finish_date"),
