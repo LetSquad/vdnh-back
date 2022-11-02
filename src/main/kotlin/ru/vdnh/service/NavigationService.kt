@@ -1,19 +1,15 @@
 package ru.vdnh.service
 
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Service
-import ru.vdnh.getLogger
 import ru.vdnh.mapper.CoordinatesMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.CoordinateDTO
+import ru.vdnh.model.dto.DateNavigationDTO
 import ru.vdnh.model.dto.FastNavigationRequestDTO
 import ru.vdnh.model.dto.MapDataDTO
-import ru.vdnh.model.dto.DateNavigationDTO
 import ru.vdnh.model.dto.PlaceNavigationDTO
 import java.math.BigInteger
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.stream.Collectors
 
@@ -24,11 +20,7 @@ class NavigationService(
     val coordinatesService: CoordinatesService,
     val graphService: GraphService,
     private val coordinatesMapper: CoordinatesMapper,
-
-    // for test:
-    val placesService: PlacesService,
-    val eventService: EventService
-) : ApplicationRunner {
+) {
 
     // TODO сделать кастомные исключения
     // +/-placeNavigation: PlaceNavigationDTO?,
@@ -58,8 +50,9 @@ class NavigationService(
             .map { locationService.addLocationPriorityByPaymentConditions(it, dto.paymentConditions) }
             .toList()
         if (dto.withLoadFactor == true) {
+            val dateTimeNow = LocalDateTime.now()
             locationsBySubjectsWithPriority
-                .map { locationService.addLocationPriorityByLoadFactor(it, LocalDate.now().dayOfWeek) }
+                .map { locationService.addLocationPriorityByLoadFactor(it, dateTimeNow) }
         }
 
         // мержим списки по определенным тематикам в один
@@ -150,40 +143,7 @@ class NavigationService(
         return sortedLocations
     }
 
-    // TEST
-    override fun run(args: ApplicationArguments?) {
-        val test = fastNavigate(
-            FastNavigationRequestDTO(
-                null,
-                null,
-
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-
-                listOf("TEST")
-            )
-        )
-
-        test.mapData
-            .map { it as CoordinateDTO }
-            .forEach {
-                if (placesService.exist(it.id!!)) {
-                    val place = placesService.getByCoordinatesId(it.id)
-                    log.info("$place")
-                } else {
-                    val event = eventService.getByCoordinatesId(it.id)
-                    log.info("$event")
-                }
-            }
-    }
-
     companion object {
-        private val log = getLogger<NavigationService>()
-
         const val DEFAULT_VISIT_DURATION_MINUTES = 120
         const val DEFAULT_ROUND_ROBIN_STRATEGY = 1
         const val DEFAULT_ENTER_NODE_ID = 80L

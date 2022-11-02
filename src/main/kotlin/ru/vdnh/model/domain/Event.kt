@@ -29,5 +29,5 @@ data class Event(
     val subjectCode: String?,
 
     val createdAt: Instant,
-    val places: List<Long>?
+    val places: List<Place>?
 )

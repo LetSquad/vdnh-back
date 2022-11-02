@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
 import ru.vdnh.model.VdnhConstants.GEOMETRY_MAP_TYPE
 import ru.vdnh.model.VdnhConstants.PLACE_MAP_TYPE
-import ru.vdnh.model.domain.LocationCoordinates
+import ru.vdnh.model.domain.Coordinates
 import ru.vdnh.model.domain.LocationType
 import ru.vdnh.model.domain.Place
 import ru.vdnh.model.dto.GeometryDTO

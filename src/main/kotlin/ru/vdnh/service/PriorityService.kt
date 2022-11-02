@@ -8,8 +8,7 @@ import ru.vdnh.model.enums.VisitorNavigationType
 import ru.vdnh.model.enums.CategoryType
 import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
-import java.time.DayOfWeek
-import java.time.LocalTime
+import java.time.LocalDateTime
 
 
 @Service
@@ -132,13 +131,13 @@ class PriorityService {
 
     fun getPriorityByLoadFactor(
         location: Location,
-        day: DayOfWeek
+        dateTime: LocalDateTime
     ): Int {
         if (location.coordinates == null) {
             return 0
         }
 
-        return location.coordinates.loadFactor[day]?.get(LocalTime.now())?.toInt()
+        return location.coordinates.loadFactor[dateTime.dayOfWeek]?.get(dateTime.toLocalTime())?.toInt()
             ?: return 0
     }
 

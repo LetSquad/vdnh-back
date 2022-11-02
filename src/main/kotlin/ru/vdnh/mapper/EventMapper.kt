@@ -7,6 +7,7 @@ import ru.vdnh.model.VdnhConstants.GEOMETRY_MAP_TYPE
 import ru.vdnh.model.VdnhConstants.PLACE_MAP_TYPE
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.LocationType
+import ru.vdnh.model.domain.Place
 import ru.vdnh.model.dto.EventDTO
 import ru.vdnh.model.dto.GeometryDTO
 import ru.vdnh.model.entity.EventEntity
@@ -19,7 +20,7 @@ class EventMapper(
     private val propertyMapper: PropertyMapper
 ) {
 
-    fun entityToDomain(entity: EventEntity, places: List<Long>) = Event(
+    fun entityToDomain(entity: EventEntity, places: List<Place>) = Event(
         id = entity.id,
         title = entity.title,
         titleEn = entity.titleEn,

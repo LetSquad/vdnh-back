@@ -8,7 +8,7 @@ import ru.vdnh.model.enums.RouteSpeedType
 import ru.vdnh.model.enums.VisitorNavigationType
 import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
-import java.time.DayOfWeek
+import java.time.LocalDateTime
 
 
 @Service
@@ -82,10 +82,10 @@ class LocationService(
 
     fun addLocationPriorityByLoadFactor(
         locationsWithPriority: List<Pair<Location, Int>>,
-        dayOfWeek: DayOfWeek
+        dateTime: LocalDateTime
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByLoadFactor(it.first, dayOfWeek)) }
+            .map { Pair(it.first, priorityService.getPriorityByLoadFactor(it.first, dateTime)) }
     }
 
     // TODO как сделать красивше в котлине ??

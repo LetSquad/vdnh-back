@@ -24,12 +24,19 @@ class PlaceService(
         return placeDomainList
     }
 
-    fun getPlaceById(id: BigInteger): PlaceDTO {
+    fun getPlaceDTOById(id: BigInteger): PlaceDTO {
         val place = placeRepository.getPlaceById(id)
         val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
         return place
             .let { placeMapper.entityToDomain(it, eventsByPlaceId) }
             .let { placeMapper.domainToDto(it) }
+    }
+
+    fun getPlaceById(id: BigInteger): Place {
+        val place = placeRepository.getPlaceById(id)
+        val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
+        return place
+            .let { placeMapper.entityToDomain(it, eventsByPlaceId) }
     }
 
     fun getActivePlacesBySubject(subjectCode: String): List<Place> {
