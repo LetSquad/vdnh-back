@@ -11,14 +11,13 @@ import ru.vdnh.model.domain.Place
 import ru.vdnh.model.dto.EventDTO
 import ru.vdnh.model.dto.GeometryDTO
 import ru.vdnh.model.entity.EventEntity
-import java.math.BigDecimal
 import java.time.Duration
 
 @Component
 class EventMapper(
     private val mapper: ObjectMapper,
     private val coordinatesMapper: CoordinatesMapper,
-    private val propertyMapper: PropertyMapper
+    private val locationPropertiesMapper: LocationPropertiesMapper
 ) {
 
     fun entityToDomain(entity: EventEntity, places: List<Place>) = Event(
@@ -48,7 +47,7 @@ class EventMapper(
             iconCode = entity.type.iconCode,
             iconColor = entity.type.iconColor
         ),
-        places = places.ifEmpty { null }
+        places = places
     )
 
     fun domainToDTO(event: Event) = EventDTO(
@@ -56,9 +55,9 @@ class EventMapper(
         type = PLACE_MAP_TYPE,
         geometry = GeometryDTO(
             type = GEOMETRY_MAP_TYPE,
-            coordinates = listOf(event.coordinates!!.latitude, event.coordinates.longitude)
+            coordinates = listOf(event.coordinates!!.longitude, event.coordinates.latitude)
         ),
 
-        property = propertyMapper.domainToDto(event)
+        properties = locationPropertiesMapper.domainToDto(event)
     )
 }

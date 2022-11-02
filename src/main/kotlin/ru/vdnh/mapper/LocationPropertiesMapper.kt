@@ -3,13 +3,13 @@ package ru.vdnh.mapper
 import org.springframework.stereotype.Component
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.Place
-import ru.vdnh.model.dto.PropertyDTO
+import ru.vdnh.model.dto.LocationPropertiesDTO
 import ru.vdnh.model.enums.CategoryType
 
 @Component
-class PropertyMapper {
+class LocationPropertiesMapper {
 
-    fun domainToDto(place: Place): PropertyDTO = PropertyDTO(
+    fun domainToDto(place: Place): LocationPropertiesDTO = LocationPropertiesDTO(
         category = CategoryType.PLACE,
         isVisible = true,
         zoom = calculateZoom(place.priority),
@@ -32,7 +32,7 @@ class PropertyMapper {
         places = null
     )
 
-    fun domainToDto(event: Event): PropertyDTO = PropertyDTO(
+    fun domainToDto(event: Event): LocationPropertiesDTO = LocationPropertiesDTO(
         category = CategoryType.EVENT,
         isVisible = true,
         zoom = calculateZoom(event.priority),
@@ -51,7 +51,7 @@ class PropertyMapper {
         color = event.type.iconColor,
         url = VDNH_BASE_URL + event.url,
         pic = VDNH_BASE_URL + event.imageUrl,
-        places = if (event.places != null) event.places.map { it.id } else listOf(),
+        places = event.places.map { it.id },
         events = null
     )
 
@@ -82,6 +82,6 @@ class PropertyMapper {
         const val MAX_PRIORITY = 200
         const val PRIORITY_COEF = 6
         const val MINIMUM_ZOOM = 14
-        const val VDNH_BASE_URL = "vdnh.ru"
+        const val VDNH_BASE_URL = "https://vdnh.ru"
     }
 }

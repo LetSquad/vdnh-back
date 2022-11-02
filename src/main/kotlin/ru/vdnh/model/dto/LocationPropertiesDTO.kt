@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import ru.vdnh.model.enums.CategoryType
 
 @Schema(description = "Property model")
-data class PropertyDTO(
+data class LocationPropertiesDTO(
     val category: CategoryType,
     val isVisible: Boolean,
     val zoom: Double?,
