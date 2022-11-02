@@ -11,6 +11,7 @@ import ru.vdnh.model.domain.Place
 import ru.vdnh.model.dto.EventDTO
 import ru.vdnh.model.dto.GeometryDTO
 import ru.vdnh.model.entity.EventEntity
+import java.math.BigDecimal
 import java.time.Duration
 
 @Component

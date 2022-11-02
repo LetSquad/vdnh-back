@@ -40,23 +40,23 @@ class PlaceService(
     }
 
     fun getActivePlacesBySubject(subjectCode: String): List<Place> {
-        val placeEntities: List<PlaceEntity> = placesRepository.getAllActiveWhereSubject(subjectCode)
+        val placeEntities: List<PlaceEntity> = placeRepository.getAllActiveWhereSubject(subjectCode)
         val placeDomainList = mutableListOf<Place>()
         for (place in placeEntities) {
-            val eventsByPlaceId: List<Long> = placesRepository.getEventsByPlaceId(place.id)
+            val eventsByPlaceId: List<Long> = placeRepository.getEventsByPlaceId(place.id)
             placeDomainList.add(placeMapper.entityToDomain(place, eventsByPlaceId))
         }
         return placeDomainList
     }
 
     fun getByCoordinatesId(coordinatesId: Long): Place {
-        val place = placesRepository.getByCoordinatesId(coordinatesId)
-        val eventsByPlaceId = placesRepository.getEventsByPlaceId(place.id)
+        val place = placeRepository.getByCoordinatesId(coordinatesId)
+        val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
         return place
             .let { placeMapper.entityToDomain(it, eventsByPlaceId) }
     }
 
     fun exist(coordinatesId: Long): Boolean =
-        placesRepository.existById(coordinatesId)
+        placeRepository.existById(coordinatesId)
 
 }

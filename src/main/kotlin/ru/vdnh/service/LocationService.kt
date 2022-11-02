@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 
 @Service
 class LocationService(
-    val placeService: PlacesService,
+    val placeService: PlaceService,
     val eventService: EventService,
     val priorityService: PriorityService,
     val locationMapper: LocationMapper
