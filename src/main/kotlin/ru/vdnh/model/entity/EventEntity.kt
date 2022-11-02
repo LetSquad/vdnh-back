@@ -1,7 +1,5 @@
 package ru.vdnh.model.entity
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Table
 import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
 import java.sql.Date
