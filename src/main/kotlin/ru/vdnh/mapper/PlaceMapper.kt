@@ -1,12 +1,13 @@
 package ru.vdnh.mapper
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
 import ru.vdnh.model.VdnhConstants.GEOMETRY_MAP_TYPE
 import ru.vdnh.model.VdnhConstants.PLACE_MAP_TYPE
 import ru.vdnh.model.domain.LocationCoordinates
 import ru.vdnh.model.domain.LocationType
 import ru.vdnh.model.domain.Place
-import ru.vdnh.model.domain.Schedule
 import ru.vdnh.model.dto.GeometryDTO
 import ru.vdnh.model.dto.PlaceDTO
 import ru.vdnh.model.entity.PlaceEntity
@@ -14,6 +15,7 @@ import java.time.Duration
 
 @Component
 class PlaceMapper(
+    private val mapper: ObjectMapper,
     private val propertyMapper: PropertyMapper
 ) {
 
@@ -49,19 +51,7 @@ class PlaceMapper(
             iconColor = placeEntity.type.iconColor
         ),
 
-        schedule = placeEntity.schedule?.let {
-            Schedule(
-                id = it.id,
-                monday = placeEntity.schedule.monday,
-                tuesday = placeEntity.schedule.tuesday,
-                wednesday = placeEntity.schedule.wednesday,
-                thursday = placeEntity.schedule.thursday,
-                friday = placeEntity.schedule.friday,
-                saturday = placeEntity.schedule.saturday,
-                sunday = placeEntity.schedule.sunday,
-                additionalInfo = placeEntity.schedule.additionalInfo,
-            )
-        },
+        schedule = placeEntity.schedule?.let { mapper.readValue(it) },
         events = events.ifEmpty { null }
     )
 

@@ -17,10 +17,10 @@ data class PlaceEntity(
     val imageUrl: String?,
     val ticketsUrl: String?,
     val isActive: Boolean,
+    val schedule: String?,
 
     val coordinates: CoordinatesEntity,
     val type: LocationTypeEntity,
-    val schedule: ScheduleEntity?,
 
     val typeCode: String,
     val subjectCode: String?,
