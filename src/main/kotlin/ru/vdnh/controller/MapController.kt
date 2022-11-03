@@ -17,7 +17,6 @@ import ru.vdnh.service.MapService
 import ru.vdnh.service.NavigationService
 import ru.vdnh.service.RouteService
 import java.math.BigInteger
-import java.time.DayOfWeek
 
 @Tag(name = "Методы работы с картой")
 @RestController
@@ -34,8 +33,8 @@ class MapController(
         description = "Получение тепловой карты по дню недели и времени"
     )
     @GetMapping("/heatmap")
-    fun getHeatmap(@RequestParam day: DayOfWeek?, @RequestParam time: String?): HeatmapDTO {
-        return coordinatesService.getHeatmap(day, time)
+    fun getHeatmap(@RequestParam dayNumber: Int?, @RequestParam time: String?): HeatmapDTO {
+        return coordinatesService.getHeatmap(dayNumber, time)
     }
 
     @Operation(

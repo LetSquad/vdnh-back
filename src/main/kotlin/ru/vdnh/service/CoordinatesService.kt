@@ -18,15 +18,15 @@ class CoordinatesService(
     private val coordinatesRepository: CoordinatesRepository
 ) {
 
-    fun getHeatmap(day: DayOfWeek?, time: String?): HeatmapDTO {
-        val parsedTime = time?.let { LocalTime.parse(time) } ?: LocalTime.now()
+    fun getHeatmap(dayNumber: Int?, time: String?): HeatmapDTO {
+        val parsedTime = if (time == null) LocalTime.now() else LocalTime.parse(time)
         val hour: Int = if (parsedTime.minute < HALF_OF_HOUR || parsedTime.hour == LAST_HOUR) {
             parsedTime.hour
         } else {
             parsedTime.hour + 1
         }
 
-        val dayOfHeatmap: DayOfWeek = day ?: LocalDate.now().dayOfWeek
+        val dayOfHeatmap: DayOfWeek = if (dayNumber == null) LocalDate.now().dayOfWeek else DayOfWeek.of(dayNumber)
         return coordinatesRepository.getAllCoordinates()
             .map { coordinatesMapper.entityToDomain(it) }
             .let { coordinatesMapper.domainListToHeatmapDTO(it, dayOfHeatmap, LocalTime.of(hour, 0)) }
