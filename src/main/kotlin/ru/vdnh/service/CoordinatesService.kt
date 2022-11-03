@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import ru.vdnh.mapper.CoordinatesMapper
 import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.RouteNode
-import ru.vdnh.model.dto.CoordinateDTOList
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.repository.CoordinatesRepository
 import java.math.BigInteger
@@ -36,18 +35,6 @@ class CoordinatesService(
     fun getRouteNodeByCoordinateId(id: BigInteger): RouteNode =
         coordinatesRepository.getCoordinatesById(id)
             .let { routeMapper.coordinatesEntityToNodeDomain(it) }
-
-    fun findRoutes(idFrom: BigInteger, idTo: BigInteger): CoordinateDTOList {
-        val coordinateFrom = coordinatesRepository.getCoordinatesById(idFrom)
-            .let { coordinatesMapper.entityToDomain(it) }
-            .let { coordinatesMapper.domainToDTO(it) }
-
-        val coordinateTo = coordinatesRepository.getCoordinatesById(idTo)
-            .let { coordinatesMapper.entityToDomain(it) }
-            .let { coordinatesMapper.domainToDTO(it) }
-
-        return CoordinateDTOList(listOf(coordinateFrom, coordinateTo))
-    }
 
     companion object {
         private const val HALF_OF_HOUR = 30
