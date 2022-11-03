@@ -54,7 +54,7 @@ class PlaceJdbc(
     override fun getPlacesByRouteId(id: BigInteger): List<PlaceEntity> {
         return jdbcTemplate.query(
             "$SQL_SELECT_ENTITY left join route_place rp on p.id = rp.place_id " +
-                    "where rp.route_id = ? order by seq", placeRowMapper, id
+                    "where rp.route_id = ? order by place_order", placeRowMapper, id
         )
     }
 

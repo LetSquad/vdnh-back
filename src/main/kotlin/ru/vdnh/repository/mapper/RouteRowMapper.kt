@@ -6,8 +6,7 @@ import ru.vdnh.model.entity.RouteEntity
 import java.sql.ResultSet
 
 @Component
-class RouteRowMapper(
-) : RowMapper<RouteEntity> {
+class RouteRowMapper : RowMapper<RouteEntity> {
 
     override fun mapRow(rs: ResultSet, rowNum: Int): RouteEntity = RouteEntity(
         id = rs.getLong("id"),

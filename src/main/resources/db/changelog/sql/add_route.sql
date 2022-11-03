@@ -9,8 +9,8 @@ CREATE TABLE route
 
 CREATE TABLE route_place
 (
-    route_id BIGINT REFERENCES route (id),
-    place_id BIGINT REFERENCES place (id),
-    seq      int,
+    route_id    BIGINT REFERENCES route (id),
+    place_id    BIGINT REFERENCES place (id),
+    place_order int,
     PRIMARY KEY (route_id, place_id)
 );
