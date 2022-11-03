@@ -7,3 +7,6 @@ databaseChangeLog:
       file: db/changelog/sql/icon_color_column.sql
   - include:
       file: db/changelog/sql/update_schedule.sql
+  - include:
+      file: db/changelog/sql/add_route.sql
+

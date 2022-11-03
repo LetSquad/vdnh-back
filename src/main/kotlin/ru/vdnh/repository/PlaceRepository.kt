@@ -16,4 +16,6 @@ interface PlaceRepository {
     fun getByCoordinatesId(coordinatesId: Long): PlaceEntity
 
     fun existById(id: Long): Boolean
+
+    fun getPlacesByRouteId(id: BigInteger): List<PlaceEntity>
 }

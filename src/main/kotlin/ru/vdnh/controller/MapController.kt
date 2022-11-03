@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import ru.vdnh.model.dto.CoordinateDTOList
 import ru.vdnh.model.dto.FastNavigationRequestDTO
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.model.dto.MapDataDTO
+import ru.vdnh.model.dto.PlaceDTOList
 import ru.vdnh.service.CoordinatesService
 import ru.vdnh.service.MapService
 import ru.vdnh.service.NavigationService
+import ru.vdnh.service.RouteService
 import java.math.BigInteger
 import java.time.DayOfWeek
 
@@ -24,7 +25,8 @@ import java.time.DayOfWeek
 class MapController(
     private val coordinatesService: CoordinatesService,
     private val navigationService: NavigationService,
-    private val mapService: MapService
+    private val mapService: MapService,
+    private val routeService: RouteService
 ) {
 
     @Operation(
@@ -38,11 +40,11 @@ class MapController(
 
     @Operation(
         summary = "Получение готового маршрута",
-        description = "Получение готового маршрута по идентификаторам места"
+        description = "Получение готового маршрута по его идентификатору"
     )
     @GetMapping("/route")
-    fun findRoutes(@RequestParam idFrom: BigInteger, @RequestParam idTo: BigInteger): CoordinateDTOList {
-        return coordinatesService.findRoutes(idFrom, idTo)
+    fun getRouteById(@RequestParam id: BigInteger): PlaceDTOList {
+        return routeService.getRoute(id)
     }
 
     @Operation(

@@ -59,4 +59,13 @@ class PlaceService(
     fun exist(coordinatesId: Long): Boolean =
         placeRepository.existById(coordinatesId)
 
+    fun getPlacesByRouteId(routeId: BigInteger): List<Place> {
+        val places = placeRepository.getPlacesByRouteId(routeId)
+        val placeDomainList = mutableListOf<Place>()
+        for (place in places) {
+            val eventsByPlaceId: List<Long> = placeRepository.getEventsByPlaceId(place.id)
+            placeDomainList.add(placeMapper.entityToDomain(place, eventsByPlaceId))
+        }
+        return placeDomainList
+    }
 }
