@@ -1,22 +1,24 @@
 package ru.vdnh.service
 
 import org.springframework.stereotype.Service
-import ru.vdnh.mapper.PlaceMapper
-import ru.vdnh.model.dto.PlaceDTOList
+import ru.vdnh.mapper.LocationMapper
+import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.repository.RouteRepository
 
 @Service
 class RouteService(
-    private val placeMapper: PlaceMapper,
     private val routeRepository: RouteRepository,
-    private val placeService: PlaceService
+    private val placeService: PlaceService,
+    private val mapboxService: MapboxService,
+
+    val locationMapper: LocationMapper
 ) {
 
-    fun getRoute(id: Long): PlaceDTOList {
+    fun getPreparedRoute(id: Long): MapRouteDataDTO {
         val routeEntity = routeRepository.getRouteById(id)
-        val placeDTOList = placeService.getPlacesByRouteId(routeEntity.id)
-            .map { placeMapper.domainToDto(it) }
+        val locations = placeService.getPlacesByRouteId(routeEntity.id)
+            .map { locationMapper.placeToLocation(it) }
 
-        return PlaceDTOList(placeDTOList)
+        return mapboxService.makeRoute(locations)
     }
 }
