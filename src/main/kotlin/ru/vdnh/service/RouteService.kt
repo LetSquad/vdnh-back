@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import ru.vdnh.mapper.PlaceMapper
 import ru.vdnh.model.dto.PlaceDTOList
 import ru.vdnh.repository.RouteRepository
-import java.math.BigInteger
 
 @Service
 class RouteService(
@@ -13,9 +12,9 @@ class RouteService(
     private val placeService: PlaceService
 ) {
 
-    fun getRoute(id: BigInteger): PlaceDTOList {
+    fun getRoute(id: Long): PlaceDTOList {
         val routeEntity = routeRepository.getRouteById(id)
-        val placeDTOList = placeService.getPlacesByRouteId(BigInteger.valueOf(routeEntity.id))
+        val placeDTOList = placeService.getPlacesByRouteId(routeEntity.id)
             .map { placeMapper.domainToDto(it) }
 
         return PlaceDTOList(placeDTOList)

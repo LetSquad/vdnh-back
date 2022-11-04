@@ -6,7 +6,6 @@ import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.repository.CoordinatesRepository
-import java.math.BigInteger
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -32,7 +31,7 @@ class CoordinatesService(
             .let { coordinatesMapper.domainListToHeatmapDTO(it, dayOfHeatmap, LocalTime.of(hour, 0)) }
     }
 
-    fun getRouteNodeByCoordinateId(id: BigInteger): RouteNode =
+    fun getRouteNodeByCoordinateId(id: Long): RouteNode =
         coordinatesRepository.getCoordinatesById(id)
             .let { routeMapper.coordinatesEntityToNodeDomain(it) }
 

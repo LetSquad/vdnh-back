@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import ru.vdnh.model.entity.RouteEntity
 import ru.vdnh.repository.mapper.RouteRowMapper
-import java.math.BigInteger
 
 @Repository
 class RouteJdbc(
@@ -12,7 +11,7 @@ class RouteJdbc(
     private val routeRowMapper: RouteRowMapper
 ) : RouteRepository {
 
-    override fun getRouteById(id: BigInteger): RouteEntity {
+    override fun getRouteById(id: Long): RouteEntity {
         return jdbcTemplate.queryForObject(
             "$SQL_SELECT_ENTITY WHERE id = ?", routeRowMapper,
             id

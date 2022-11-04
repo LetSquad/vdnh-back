@@ -8,7 +8,6 @@ import ru.vdnh.model.dto.DateNavigationDTO
 import ru.vdnh.model.dto.FastNavigationRequestDTO
 import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.dto.PlaceNavigationDTO
-import java.math.BigInteger
 import java.time.LocalDateTime
 import java.util.stream.Collectors
 
@@ -113,18 +112,18 @@ class NavigationService(
         val locationStart: Location =
             locationService.getByPlaceId(placeNavigation?.startPlaceId ?: DEFAULT_START_PLACE_ID)
         val nodeStart: RouteNode =
-            coordinatesService.getRouteNodeByCoordinateId(locationStart.coordinates.id.toBigInteger())
+            coordinatesService.getRouteNodeByCoordinateId(locationStart.coordinates.id)
 
         // определяем точку выхода маршрута
         // TODO подбирать точку выхода с маршрута по дефолту ближайшую к любой точке входа/выхода
 //        val locationFinish: Location =
 //            locationService.getByPlaceId(placeNavigation?.startPlaceId ?: DEFAULT_FINISH_PLACE_ID)
 //        val nodeFinish: RouteNode =
-//            coordinatesService.getRouteNodeByCoordinateId(locationFinish.coordinates.id.toBigInteger())
+//            coordinatesService.getRouteNodeByCoordinateId(locationFinish.coordinates.id)
 
         // создаем граф на основе точек маршрута
         val routeNodes = locations.stream()
-            .map { coordinatesService.getRouteNodeByCoordinateId(BigInteger.valueOf(it.coordinates.id)) }
+            .map { coordinatesService.getRouteNodeByCoordinateId(it.coordinates.id) }
             .collect(Collectors.toList())
 
         routeNodes.add(nodeStart)

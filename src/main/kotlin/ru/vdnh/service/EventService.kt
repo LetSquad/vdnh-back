@@ -7,7 +7,6 @@ import ru.vdnh.model.domain.Place
 import ru.vdnh.model.dto.EventDTO
 import ru.vdnh.model.entity.EventEntity
 import ru.vdnh.repository.EventRepository
-import java.math.BigInteger
 
 @Service
 class EventService(
@@ -23,9 +22,9 @@ class EventService(
         for (event in events) {
             val placesIdByEventId: List<Long> = eventRepository.getPlacesByEventId(event.id)
             val placesByEventId: List<Place> = placesIdByEventId
-                .map { placeService.getPlaceById(BigInteger.valueOf(it)) }
+                .map { placeService.getPlaceById(it) }
 
-                eventsDomainList.add(eventMapper.entityToDomain(event, placesByEventId))
+            eventsDomainList.add(eventMapper.entityToDomain(event, placesByEventId))
         }
         return eventsDomainList
     }
@@ -36,18 +35,18 @@ class EventService(
         for (event in events) {
             val placesIdByEventId: List<Long> = eventRepository.getPlacesByEventId(event.id)
             val placesByEventId: List<Place> = placesIdByEventId
-                .map { placeService.getPlaceById(BigInteger.valueOf(it)) }
+                .map { placeService.getPlaceById(it) }
 
-                eventsDomainList.add(eventMapper.entityToDomain(event, placesByEventId))
+            eventsDomainList.add(eventMapper.entityToDomain(event, placesByEventId))
         }
         return eventsDomainList
     }
 
-    fun findEvent(id: BigInteger): EventDTO {
+    fun findEvent(id: Long): EventDTO {
         val event = eventRepository.findEvent(id)
         val placesIdByEventId: List<Long> = eventRepository.getPlacesByEventId(event.id)
         val placesByEventId: List<Place> = placesIdByEventId
-            .map { placeService.getPlaceById(BigInteger.valueOf(it)) }
+            .map { placeService.getPlaceById(it) }
 
         return event
             .let { eventMapper.entityToDomain(it, placesByEventId) }
@@ -60,7 +59,7 @@ class EventService(
         for (event in events) {
             val placesIdByEventId: List<Long> = eventRepository.getPlacesByEventId(event.id)
             val placesByEventId: List<Place> = placesIdByEventId
-                .map { placeService.getPlaceById(BigInteger.valueOf(it)) }
+                .map { placeService.getPlaceById(it) }
             eventsDomainList.add(eventMapper.entityToDomain(event, placesByEventId))
         }
         return eventsDomainList

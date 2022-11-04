@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.vdnh.model.dto.PlaceDTO
 import ru.vdnh.service.PlaceService
-import java.math.BigInteger
 
 @Tag(name = "Методы работы с местами")
 @RestController
@@ -19,7 +18,7 @@ class PlaceController(private val placeService: PlaceService) {
         summary = "Получение места по его идентификатору"
     )
     @GetMapping("{id}")
-    fun findEvent(@PathVariable id: BigInteger): PlaceDTO {
+    fun findEvent(@PathVariable id: Long): PlaceDTO {
         return placeService.getPlaceDTOById(id)
     }
 }

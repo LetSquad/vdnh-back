@@ -17,7 +17,6 @@ import ru.vdnh.service.CoordinatesService
 import ru.vdnh.service.MapService
 import ru.vdnh.service.NavigationService
 import ru.vdnh.service.RouteService
-import java.math.BigInteger
 
 @Tag(name = "Методы работы с картой")
 @RestController
@@ -43,7 +42,7 @@ class MapController(
         description = "Получение готового маршрута по его идентификатору"
     )
     @GetMapping("/route")
-    fun getRouteById(@RequestParam id: BigInteger): PlaceDTOList {
+    fun getRouteById(@RequestParam id: Long): PlaceDTOList {
         return routeService.getRoute(id)
     }
 

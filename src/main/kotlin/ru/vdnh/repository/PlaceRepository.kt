@@ -1,13 +1,12 @@
 package ru.vdnh.repository
 
 import ru.vdnh.model.entity.PlaceEntity
-import java.math.BigInteger
 
 interface PlaceRepository {
 
     fun getAllActivePlaces(): List<PlaceEntity>
 
-    fun getPlaceById(id: BigInteger): PlaceEntity
+    fun getPlaceById(id: Long): PlaceEntity
 
     fun getEventsByPlaceId(placeId: Long): List<Long>
 
@@ -15,5 +14,5 @@ interface PlaceRepository {
 
     fun getByCoordinatesId(coordinatesId: Long): PlaceEntity
 
-    fun getPlacesByRouteId(id: BigInteger): List<PlaceEntity>
+    fun getPlacesByRouteId(id: Long): List<PlaceEntity>
 }

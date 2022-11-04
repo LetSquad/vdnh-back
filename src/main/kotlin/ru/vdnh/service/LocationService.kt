@@ -20,7 +20,7 @@ class LocationService(
 ) {
 
     fun getByPlaceId(placeId: Long): Location {
-        return placeService.getPlaceById(placeId.toBigInteger())
+        return placeService.getPlaceById(placeId)
             .let { locationMapper.placeToLocation(it) }
     }
 
