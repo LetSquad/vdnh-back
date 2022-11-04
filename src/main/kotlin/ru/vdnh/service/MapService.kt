@@ -18,7 +18,7 @@ class MapService(
             .filter { it.coordinates != null }
             .map { eventMapper.domainToDTO(it) }
 
-        val places = placeService.getAllPlaces()
+        val places = placeService.getAllActivePlaces()
             .map { placeMapper.domainToDto(it) }
 
         return MapDataDTO(places + events)

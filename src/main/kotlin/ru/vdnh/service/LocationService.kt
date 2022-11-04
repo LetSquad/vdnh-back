@@ -3,11 +3,12 @@ package ru.vdnh.service
 import org.springframework.stereotype.Service
 import ru.vdnh.mapper.LocationMapper
 import ru.vdnh.model.domain.Location
-import ru.vdnh.model.enums.PopularNavigationType
-import ru.vdnh.model.enums.RouteSpeedType
-import ru.vdnh.model.enums.VisitorNavigationType
+import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
+import ru.vdnh.model.enums.PopularNavigationType
+import ru.vdnh.model.enums.RouteDifficultType
+import ru.vdnh.model.enums.VisitorNavigationType
 import java.time.LocalDateTime
 
 
@@ -19,6 +20,24 @@ class LocationService(
     val locationMapper: LocationMapper
 ) {
 
+    fun makeResultRouteDTO(locations: List<Location>) = MapRouteDataDTO(
+        locationMapper.locationsToRouteDTO(locations)
+    )
+
+    fun getAllLocations(): List<Location> {
+        val locationsBySubject = mutableListOf<Location>()
+        locationsBySubject.addAll(placeService.getAllActivePlaces()
+            .map { locationMapper.placeToLocation(it) }
+        )
+        // TODO продумать нормальную фильтрацию событий
+        locationsBySubject.addAll(eventService.getAllActiveEvents()
+            .filter { it.places.size == 1 }
+            .map { locationMapper.eventToLocation(it) }
+        )
+
+        return locationsBySubject
+    }
+
     fun getLocationsBySubject(subjectCode: String): List<Location> {
         val locationsBySubject = mutableListOf<Location>()
         locationsBySubject.addAll(placeService.getActivePlacesBySubject(subjectCode)
@@ -26,7 +45,7 @@ class LocationService(
         )
         // TODO продумать нормальную фильтрацию событий
         locationsBySubject.addAll(eventService.getActiveEventsBySubject(subjectCode)
-            .filter { it.places != null && it.places.size == 1 }
+            .filter { it.places.size == 1 }
             .map { locationMapper.eventToLocation(it) }
         )
 
@@ -48,12 +67,12 @@ class LocationService(
             .map { Pair(it.first, priorityService.getPriorityByPopular(it.first, popularType)) }
     }
 
-    fun addLocationPriorityByVisitTime(
+    fun addLocationPriorityByRouteDifficulty(
         locationsWithPriority: List<Pair<Location, Int>>,
-        routeSpeedType: RouteSpeedType?,
+        routeDifficultType: RouteDifficultType?,
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByRouteSpeed(it.first, routeSpeedType)) }
+            .map { Pair(it.first, priorityService.getPriorityByRouteSpeed(it.first, routeDifficultType)) }
     }
 
     fun addLocationPriorityByVisitorType(
@@ -88,21 +107,20 @@ class LocationService(
             .map { Pair(it.first, priorityService.getPriorityByLoadFactor(it.first, dateTime)) }
     }
 
-    // TODO как сделать красивше в котлине ??
     fun getVisitsNumber(
         locations: List<Location>,
         visitDurationMinutes: Int
     ): Int {
-        var i = 0
-        var count = 0
         var summaryDuration = 0L
 
-        while (summaryDuration < visitDurationMinutes) {
-            count++
-            summaryDuration += locations[i].visitTime?.toMinutes() ?: 0
-            i++
-        }
+        locations
+            .forEachIndexed { i, location ->
+                summaryDuration += location.visitTime?.toMinutes() ?: 0
+                if (summaryDuration > visitDurationMinutes) {
+                    return i + 1
+                }
 
-        return count
+            }
+        return locations.size
     }
 }

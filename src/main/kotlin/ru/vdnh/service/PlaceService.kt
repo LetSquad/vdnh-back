@@ -14,8 +14,8 @@ class PlaceService(
     private val placeMapper: PlaceMapper
 ) {
 
-    fun getAllPlaces(): List<Place> {
-        val placeEntities: List<PlaceEntity> = placeRepository.getAllPlaces()
+    fun getAllActivePlaces(): List<Place> {
+        val placeEntities: List<PlaceEntity> = placeRepository.getAllActivePlaces()
         val placeDomainList = mutableListOf<Place>()
         for (place in placeEntities) {
             val eventsByPlaceId: List<Long> = placeRepository.getEventsByPlaceId(place.id)
@@ -48,16 +48,6 @@ class PlaceService(
         }
         return placeDomainList
     }
-
-    fun getByCoordinatesId(coordinatesId: Long): Place {
-        val place = placeRepository.getByCoordinatesId(coordinatesId)
-        val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
-        return place
-            .let { placeMapper.entityToDomain(it, eventsByPlaceId) }
-    }
-
-    fun exist(coordinatesId: Long): Boolean =
-        placeRepository.existById(coordinatesId)
 
     fun getPlacesByRouteId(routeId: BigInteger): List<Place> {
         val places = placeRepository.getPlacesByRouteId(routeId)

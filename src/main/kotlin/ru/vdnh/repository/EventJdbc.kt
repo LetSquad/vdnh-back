@@ -24,6 +24,12 @@ class EventJdbc(
         )
     }
 
+    override fun getAllActiveEvents(): List<EventEntity> {
+        return jdbcTemplate.query(
+            "$SQL_SELECT_ENTITY WHERE e.is_active = true", eventRowMapper
+        )
+    }
+
     override fun getPlacesByEventId(eventId: Long): List<Long> {
         return jdbcTemplate.query("SELECT place_id from event_place where event_id = ?", { rs, _ ->
             rs.getLong("place_id")

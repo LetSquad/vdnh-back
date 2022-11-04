@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 import ru.vdnh.model.dto.FastNavigationRequestDTO
 import ru.vdnh.model.dto.HeatmapDTO
 import ru.vdnh.model.dto.MapDataDTO
+import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.dto.PlaceDTOList
 import ru.vdnh.service.CoordinatesService
 import ru.vdnh.service.MapService
@@ -59,7 +60,7 @@ class MapController(
         summary = "Построение быстрого маршрута"
     )
     @PostMapping("fast")
-    fun fastNavigate(@RequestBody dto: FastNavigationRequestDTO): MapDataDTO {
+    fun fastNavigate(@RequestBody dto: FastNavigationRequestDTO): MapRouteDataDTO {
         return navigationService.fastNavigate(dto)
     }
 }

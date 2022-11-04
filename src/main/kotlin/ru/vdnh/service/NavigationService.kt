@@ -1,13 +1,12 @@
 package ru.vdnh.service
 
+import org.jgrapht.traverse.ClosestFirstIterator
 import org.springframework.stereotype.Service
-import ru.vdnh.mapper.CoordinatesMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.RouteNode
-import ru.vdnh.model.dto.CoordinatesDTO
 import ru.vdnh.model.dto.DateNavigationDTO
 import ru.vdnh.model.dto.FastNavigationRequestDTO
-import ru.vdnh.model.dto.MapDataDTO
+import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.dto.PlaceNavigationDTO
 import java.math.BigInteger
 import java.time.LocalDateTime
@@ -19,7 +18,6 @@ class NavigationService(
     val locationService: LocationService,
     val coordinatesService: CoordinatesService,
     val graphService: GraphService,
-    private val coordinatesMapper: CoordinatesMapper,
 ) {
 
     // TODO сделать кастомные исключения
@@ -32,10 +30,14 @@ class NavigationService(
     // +popularType: PopularNavigationType?,
     // +placement: LocationPlacement?,
     // +paymentConditions: PaymentConditions?,
-    fun fastNavigate(dto: FastNavigationRequestDTO): MapDataDTO {
+    fun fastNavigate(dto: FastNavigationRequestDTO): MapRouteDataDTO {
         // берем все места и события
-        val locationsBySubjects: List<List<Location>> = dto.subjects
-            .map { locationService.getLocationsBySubject(it) }
+        val locationsBySubjects: List<List<Location>> =
+            if (dto.subjects != null)
+                dto.subjects
+                    .map { locationService.getLocationsBySubject(it) }
+            else
+                listOf(locationService.getAllLocations())
 
         // задаем каждой локации приоритет исходя из списка параметров
         // TODO отфильтровать места по расписанию исходя из даты
@@ -43,8 +45,8 @@ class NavigationService(
             .asSequence()
             .map { it -> it.map { Pair(it, 0) } }
             .map { locationService.addLocationPriorityByLocationType(it) }
-            .map { locationService.addLocationPriorityByPopular(it, dto.popularType) }
-            .map { locationService.addLocationPriorityByVisitTime(it, dto.routeSpeedType) }
+            .map { locationService.addLocationPriorityByPopular(it, dto.popularity) }
+            .map { locationService.addLocationPriorityByRouteDifficulty(it, dto.difficulty) }
             .map { locationService.addLocationPriorityByVisitorType(it, dto.visitorType) }
             .map { locationService.addLocationPriorityByLocationPlacement(it, dto.placement) }
             .map { locationService.addLocationPriorityByPaymentConditions(it, dto.paymentConditions) }
@@ -79,9 +81,7 @@ class NavigationService(
             dto.placeNavigation
         )
 
-        val coordinateDtoList: List<CoordinatesDTO> = locationRouteList
-            .map { coordinatesMapper.domainToDTO(it.coordinates) }
-        return MapDataDTO(coordinateDtoList)
+        return locationService.makeResultRouteDTO(locationRouteList)
     }
 
     fun getVisitDurationMinutes(
@@ -128,13 +128,18 @@ class NavigationService(
         val routeNodes = locations.stream()
             .map { coordinatesService.getRouteNodeByCoordinateId(BigInteger.valueOf(it.coordinates.id)) }
             .collect(Collectors.toList())
+
+        routeNodes.add(nodeStart)
+        if (nodeFinish != null) {
+            routeNodes.add(nodeFinish)
+        }
         val graph = graphService.createGraphFromRouteNodes(routeNodes)
 
         // определяем кратчайший путь между точками маршрута
-        val sortedLocations: List<Location>
+        val sortedLocations: MutableList<Location> = mutableListOf()
         if (nodeFinish == null) {
-            sortedLocations = graphService.getClosestRoute(graph, nodeStart)
-                .map { locations.find { location -> location.coordinates.id == it.coordinatesId }!! }
+            ClosestFirstIterator(graph, nodeStart)
+                .forEach { sortedLocations.add(locations.find { location -> location.coordinates.id == it.coordinatesId }!!) }
         } else {
             // TODO подобрать алгоритм под нахождение кратчайшего пути с конечной точкой
             throw RuntimeException("TODO(Not yet implemented)")
