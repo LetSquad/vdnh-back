@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import ru.vdnh.model.entity.PlaceEntity
 import ru.vdnh.repository.mapper.PlaceRowMapper
-import java.math.BigInteger
 
 @Repository
 class PlaceJdbc(
@@ -18,7 +17,7 @@ class PlaceJdbc(
         )
     }
 
-    override fun getPlaceById(id: BigInteger): PlaceEntity {
+    override fun getPlaceById(id: Long): PlaceEntity {
         return jdbcTemplate.queryForObject(
             "$SQL_SELECT_ENTITY WHERE p.id = ?", placeRowMapper,
             id
@@ -45,7 +44,7 @@ class PlaceJdbc(
         )!!
     }
 
-    override fun getPlacesByRouteId(id: BigInteger): List<PlaceEntity> {
+    override fun getPlacesByRouteId(id: Long): List<PlaceEntity> {
         return jdbcTemplate.query(
             "$SQL_SELECT_ENTITY left join route_place rp on p.id = rp.place_id " +
                     "where rp.route_id = ? order by place_order", placeRowMapper, id

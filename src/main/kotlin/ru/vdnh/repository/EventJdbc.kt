@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import ru.vdnh.model.entity.EventEntity
 import ru.vdnh.repository.mapper.EventRowMapper
-import java.math.BigInteger
 
 @Repository
 class EventJdbc(
@@ -12,7 +11,7 @@ class EventJdbc(
     private val eventRowMapper: EventRowMapper
 ) : EventRepository {
 
-    override fun findEvent(id: BigInteger): EventEntity {
+    override fun findEvent(id: Long): EventEntity {
         return jdbcTemplate.queryForObject(
             "$SQL_SELECT_ENTITY WHERE e.id = ?", eventRowMapper, id
         )!!

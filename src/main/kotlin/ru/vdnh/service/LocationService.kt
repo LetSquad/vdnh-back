@@ -13,14 +13,14 @@ import java.time.LocalDateTime
 
 @Service
 class LocationService(
-    val placeService: PlaceService,
-    val eventService: EventService,
-    val priorityService: PriorityService,
-    val locationMapper: LocationMapper
+    private val placeService: PlaceService,
+    private val eventService: EventService,
+    private val priorityService: PriorityService,
+    private val locationMapper: LocationMapper
 ) {
 
     fun getByPlaceId(placeId: Long): Location {
-        return placeService.getPlaceById(placeId.toBigInteger())
+        return placeService.getPlaceById(placeId)
             .let { locationMapper.placeToLocation(it) }
     }
 

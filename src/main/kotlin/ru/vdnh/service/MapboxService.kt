@@ -7,6 +7,7 @@ import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import org.springframework.stereotype.Service
 import ru.vdnh.config.MapboxConfigProperties
+import ru.vdnh.exception.MapboxException
 import ru.vdnh.mapper.MapRouteMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.dto.MapRouteDataDTO
@@ -14,8 +15,8 @@ import ru.vdnh.model.dto.MapRouteDataDTO
 
 @Service
 class MapboxService(
-    val mapRouteMapper: MapRouteMapper,
-    val mapboxConfigProperties: MapboxConfigProperties
+    private val mapRouteMapper: MapRouteMapper,
+    private val mapboxConfigProperties: MapboxConfigProperties
 ) {
 
     fun makeRoute(locations: List<Location>): MapRouteDataDTO {
@@ -37,6 +38,6 @@ class MapboxService(
             return mapRouteMapper.toMapRouteDTO(locations, lineString)
         }
 
-        throw RuntimeException("response not ok")
+        throw MapboxException("Response from mapbox is not ok: [$response]")
     }
 }

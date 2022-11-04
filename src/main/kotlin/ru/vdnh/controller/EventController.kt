@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.vdnh.model.dto.EventDTO
 import ru.vdnh.service.EventService
-import java.math.BigInteger
 
 @Tag(name = "Методы работы с событиями")
 @RestController
 @RequestMapping("event")
-class EventController(val eventService: EventService) {
+class EventController(private val eventService: EventService) {
     @Operation(
         summary = "Получение события по его идентификатору"
     )
@@ -25,7 +24,7 @@ class EventController(val eventService: EventService) {
         ]
     )
     @GetMapping("{id}")
-    fun findEvent(@PathVariable id: BigInteger): EventDTO {
+    fun findEvent(@PathVariable id: Long): EventDTO {
         return eventService.findEvent(id)
     }
 }

@@ -6,7 +6,6 @@ import ru.vdnh.model.domain.Place
 import ru.vdnh.model.dto.PlaceDTO
 import ru.vdnh.model.entity.PlaceEntity
 import ru.vdnh.repository.PlaceRepository
-import java.math.BigInteger
 
 @Service
 class PlaceService(
@@ -24,7 +23,7 @@ class PlaceService(
         return placeDomainList
     }
 
-    fun getPlaceDTOById(id: BigInteger): PlaceDTO {
+    fun getPlaceDTOById(id: Long): PlaceDTO {
         val place = placeRepository.getPlaceById(id)
         val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
         return place
@@ -32,7 +31,7 @@ class PlaceService(
             .let { placeMapper.domainToDto(it) }
     }
 
-    fun getPlaceById(id: BigInteger): Place {
+    fun getPlaceById(id: Long): Place {
         val place = placeRepository.getPlaceById(id)
         val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
         return place
@@ -49,7 +48,7 @@ class PlaceService(
         return placeDomainList
     }
 
-    fun getPlacesByRouteId(routeId: BigInteger): List<Place> {
+    fun getPlacesByRouteId(routeId: Long): List<Place> {
         val places = placeRepository.getPlacesByRouteId(routeId)
         val placeDomainList = mutableListOf<Place>()
         for (place in places) {

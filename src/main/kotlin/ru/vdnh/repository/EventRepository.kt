@@ -1,10 +1,9 @@
 package ru.vdnh.repository
 
 import ru.vdnh.model.entity.EventEntity
-import java.math.BigInteger
 
 interface EventRepository {
-    fun findEvent(id: BigInteger): EventEntity
+    fun findEvent(id: Long): EventEntity
 
     fun getAllEvents(): List<EventEntity>
 

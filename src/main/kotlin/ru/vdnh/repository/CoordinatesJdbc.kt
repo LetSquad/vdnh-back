@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import ru.vdnh.model.entity.CoordinatesEntity
 import ru.vdnh.repository.mapper.CoordinatesRowMapper
-import java.math.BigInteger
 
 @Repository
 class CoordinatesJdbc(
@@ -19,25 +18,11 @@ class CoordinatesJdbc(
         )
     }
 
-    override fun getCoordinatesById(id: BigInteger): CoordinatesEntity {
+    override fun getCoordinatesById(id: Long): CoordinatesEntity {
         return jdbcTemplate.queryForObject(
             "$SQL_SELECT_ENTITY WHERE id = ?",
             coordinatesRowMapper, id
         )!!
-    }
-
-    override fun get(id: Long): CoordinatesEntity? {
-        return jdbcTemplate.queryForObject(
-            "$SQL_SELECT_ENTITY WHERE id = ?",
-            { rs, _ ->
-                CoordinatesEntity(
-                    id = rs.getLong("id"),
-                    latitude = rs.getBigDecimal("latitude"),
-                    longitude = rs.getBigDecimal("longitude"),
-                    connections = rs.getString("connections"),
-                    loadFactor = rs.getString("load_factor")
-                )
-            }, id)
     }
 
     companion object {
