@@ -27,7 +27,7 @@ class LocationPropertiesMapper {
         icon = place.type.iconCode,
         color = place.type.iconColor,
         url = VDNH_BASE_URL + place.url,
-        pic = VDNH_BASE_URL + place.imageUrl,
+        pic = place.imageUrl?.let { VDNH_BASE_URL + it },
         events = place.events,
         places = null
     )
@@ -50,7 +50,7 @@ class LocationPropertiesMapper {
         icon = event.type.iconCode,
         color = event.type.iconColor,
         url = VDNH_BASE_URL + event.url,
-        pic = VDNH_BASE_URL + event.imageUrl,
+        pic = event.imageUrl?.let { VDNH_BASE_URL + it },
         places = event.places.map { it.id },
         events = null
     )
@@ -69,19 +69,23 @@ class LocationPropertiesMapper {
     }
 
     companion object {
-        const val KEY_TITLE_RU = "titleRu"
-        const val KEY_TITLE_EN = "titleEn"
-        const val KEY_TITLE_CN = "titleCn"
-        const val KEY_SHORT_TITLE_RU = "shortTitleRu"
-        const val KEY_SHORT_TITLE_EN = "shortTitleEn"
-        const val KEY_SHORT_TITLE_CN = "shortTitleCn"
-        const val KEY_TYPE_RU = "typeRu"
-        const val KEY_TYPE_EN = "typeEn"
-        const val KEY_TYPE_CN = "typeCn"
-        const val KEY_SHORT_TITLE_LENGTH = 30
-        const val MAX_PRIORITY = 200
-        const val PRIORITY_COEF = 6
-        const val MINIMUM_ZOOM = 14
-        const val VDNH_BASE_URL = "https://vdnh.ru"
+        private const val KEY_TITLE_RU = "titleRu"
+        private const val KEY_TITLE_EN = "titleEn"
+        private const val KEY_TITLE_CN = "titleCn"
+
+        private const val KEY_SHORT_TITLE_RU = "shortTitleRu"
+        private const val KEY_SHORT_TITLE_EN = "shortTitleEn"
+        private const val KEY_SHORT_TITLE_CN = "shortTitleCn"
+
+        private const val KEY_TYPE_RU = "typeRu"
+        private const val KEY_TYPE_EN = "typeEn"
+        private const val KEY_TYPE_CN = "typeCn"
+
+        private const val KEY_SHORT_TITLE_LENGTH = 30
+        private const val MAX_PRIORITY = 200
+        private const val PRIORITY_COEF = 6
+        private const val MINIMUM_ZOOM = 14
+
+        private const val VDNH_BASE_URL = "https://vdnh.ru"
     }
 }

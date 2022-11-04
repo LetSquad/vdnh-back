@@ -4,12 +4,12 @@ import ru.vdnh.model.enums.MovementRouteType
 import ru.vdnh.model.enums.PaymentRequirements
 import ru.vdnh.model.enums.PopularNavigationType
 import ru.vdnh.model.enums.RouteDifficultType
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 data class RouteNavigationDTO(
     // date
-    val dateTimeStart: LocalDateTime?,
-    val dateTimeEnd: LocalDateTime?,
+    val dateTimeStart: OffsetDateTime?,
+    val dateTimeEnd: OffsetDateTime?,
 
     // navigation
     val startPlaceId: Long?,

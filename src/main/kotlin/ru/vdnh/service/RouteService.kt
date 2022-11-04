@@ -10,6 +10,7 @@ import ru.vdnh.model.dto.RouteNavigationDTO
 import ru.vdnh.model.enums.MovementRouteType
 import ru.vdnh.repository.RouteRepository
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.stream.Collectors
 
 @Service
@@ -118,7 +119,9 @@ class RouteService(
 
         // берем определенное количество локаций исходя из запланированной продолжительности посещения
         // TODO брать из routeSpeedType ???
-        val visitDurationMinutes = getVisitDurationMinutes(dto.dateTimeStart, dto.dateTimeEnd)
+        val localStartTime: LocalDateTime? = dto.dateTimeStart?.atZoneSameInstant(MOSCOW_TIME_ZONE)?.toLocalDateTime()
+        val localEndTime: LocalDateTime? = dto.dateTimeEnd?.atZoneSameInstant(MOSCOW_TIME_ZONE)?.toLocalDateTime()
+        val visitDurationMinutes = getVisitDurationMinutes(localStartTime, localEndTime)
         val locationCount = locationService.getVisitsNumber(sortedLocationsByPriority, visitDurationMinutes)
         val sortedLocationsByPriorityAndVisitDuration: List<Location> =
             sortedLocationsByPriority.take(locationCount)
@@ -196,5 +199,7 @@ class RouteService(
         const val DEFAULT_ROUND_ROBIN_STRATEGY = 1
         const val DEFAULT_START_PLACE_ID = 334L
         const val DEFAULT_FINISH_PLACE_ID = 334L
+
+        private val MOSCOW_TIME_ZONE = ZoneId.of("UTC+3")
     }
 }
