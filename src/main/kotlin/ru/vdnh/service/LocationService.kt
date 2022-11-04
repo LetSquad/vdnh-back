@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import ru.vdnh.mapper.LocationMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.enums.LocationPlacement
-import ru.vdnh.model.enums.PaymentConditions
+import ru.vdnh.model.enums.PaymentRequirements
 import ru.vdnh.model.enums.PopularNavigationType
 import ru.vdnh.model.enums.RouteDifficultType
 import java.time.LocalDateTime
@@ -82,12 +82,12 @@ class LocationService(
             .map { Pair(it.first, priorityService.getPriorityByLocationPlacement(it.first, locationPlacement)) }
     }
 
-    fun addLocationPriorityByPaymentConditions(
+    fun addLocationPriorityByPaymentRequirements(
         locationsWithPriority: List<Pair<Location, Int>>,
-        paymentConditions: PaymentConditions?,
+        paymentRequirements: PaymentRequirements?,
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByPaymentConditions(it.first, paymentConditions)) }
+            .map { Pair(it.first, priorityService.getPriorityByPaymentRequirements(it.first, paymentRequirements)) }
     }
 
     fun addLocationPriorityByLoadFactor(

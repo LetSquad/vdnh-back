@@ -1,7 +1,7 @@
 package ru.vdnh.model.dto
 
 import ru.vdnh.model.enums.MovementRouteType
-import ru.vdnh.model.enums.PaymentConditions
+import ru.vdnh.model.enums.PaymentRequirements
 import ru.vdnh.model.enums.PopularNavigationType
 import ru.vdnh.model.enums.RouteDifficultType
 import java.time.LocalDateTime
@@ -19,7 +19,7 @@ data class RouteNavigationDTO(
     val peopleNumber: VisitorCountDTO?,
     val popularity: PopularNavigationType?,
     val difficulty: RouteDifficultType?,
-    val payment: PaymentConditions?,
+    val payment: PaymentRequirements?,
     val movement: MovementRouteType?,
     val loadFactor: Boolean?,
     val food: Boolean?,
