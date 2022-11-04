@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service
 import ru.vdnh.mapper.LocationMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.RouteNode
-import ru.vdnh.model.dto.DateNavigationDTO
-import ru.vdnh.model.dto.FastNavigationRequestDTO
 import ru.vdnh.model.dto.MapRouteDataDTO
-import ru.vdnh.model.dto.PlaceNavigationDTO
+import ru.vdnh.model.dto.RouteNavigationDTO
+import ru.vdnh.model.enums.MovementRouteType
 import ru.vdnh.repository.RouteRepository
 import java.time.LocalDateTime
 import java.util.stream.Collectors
@@ -30,40 +29,77 @@ class RouteService(
         val locations = placeService.getPlacesByRouteId(routeEntity.id)
             .map { locationMapper.placeToLocation(it) }
 
-        return mapboxService.makeRoute(locations)
+        return mapboxService.makeRoute(locations, MovementRouteType.WALKING)
     }
 
-    // +/-placeNavigation: PlaceNavigationDTO?,
-    // +/-dateNavigation: DateNavigationDTO?,
+    //    // date
+    //    val dateTimeStart: LocalDateTime?,
+    //    val dateTimeEnd: LocalDateTime?,
     //
-    // +withLoadFactor: Boolean?,
-    // +visitorType: VisitorNavigationType?,
-    // +routeSpeedType: RouteSpeedType?,
-    // +popularType: PopularNavigationType?,
-    // +placement: LocationPlacement?,
-    // +paymentConditions: PaymentConditions?,
-    fun getNavigateRoute(dto: FastNavigationRequestDTO): MapRouteDataDTO {
+    //    // navigation
+    //    +val startPlaceId: Long?,
+    //    +val finishPlaceId: Long?,
+    //
+    //    // criteria
+    //    +val peopleNumber: VisitorCountDTO?,
+    //    +val popularity: PopularNavigationType?,
+    //    +val difficulty: RouteDifficultType?,
+    //    +val payment: PaymentConditions?,
+    //    +val movement: MovementRouteType?,
+    //    +val loadFactor: Boolean?,
+    //    val food: Boolean?,
+    //    +val tags: List<String>?
+
+    fun updateTagsFromDto(
+        tagsFromRequest: List<String>?,
+        kids: Boolean?
+    ): List<String>? {
+        if (kids == true) {
+            val resultTags: MutableList<String> = tagsFromRequest?.toMutableList() ?: mutableListOf()
+            resultTags.add("KIDS")
+
+            return resultTags
+        }
+
+        return tagsFromRequest
+    }
+
+    fun getNavigateRoute(dto: RouteNavigationDTO): MapRouteDataDTO {
+        val resultTags: List<String>? = updateTagsFromDto(dto.tags, dto.peopleNumber?.kid != 0)
+
         // берем все места и события
         val locationsBySubjects: List<List<Location>> =
-            if (dto.subjects != null)
-                dto.subjects
-                    .map { locationService.getLocationsBySubject(it) }
-            else
-                listOf(locationService.getAllLocations())
+            resultTags?.map { locationService.getLocationsBySubject(it) }
+                ?: listOf(locationService.getAllActiveLocations())
 
         // задаем каждой локации приоритет исходя из списка параметров
         // TODO отфильтровать места по расписанию исходя из даты
         val locationsBySubjectsWithPriority: List<List<Pair<Location, Int>>> = locationsBySubjects
             .asSequence()
-            .map { it -> it.map { Pair(it, 0) } }
-            .map { locationService.addLocationPriorityByLocationType(it) }
-            .map { locationService.addLocationPriorityByPopular(it, dto.popularity) }
-            .map { locationService.addLocationPriorityByRouteDifficulty(it, dto.difficulty) }
-            .map { locationService.addLocationPriorityByVisitorType(it, dto.visitorType) }
-            .map { locationService.addLocationPriorityByLocationPlacement(it, dto.placement) }
-            .map { locationService.addLocationPriorityByPaymentConditions(it, dto.paymentConditions) }
+            .map { it -> it.map { Pair(it, DEFAULT_PRIORITY) } }
+            .map { locationService.addLocationPriorityByLocationType(it) }                                  // приоритет типу локации (событие или место)
+            .map {
+                locationService.addLocationPriorityByPopular(
+                    it,
+                    dto.popularity
+                )
+            }                       // приоритет по популярности места
+            .map {
+                locationService.addLocationPriorityByRouteDifficulty(
+                    it,
+                    dto.difficulty
+                )
+            }               // приоритет по сложности маршрута TODO стоит завязать критерий на количество посещаемых мест
+//            .map { locationService.addLocationPriorityByVisitorTypeAndNumber(it, dto.peopleNumber) }        // приоритет по количеству посетителей
+//            .map { locationService.addLocationPriorityByLocationPlacement(it, LocationPlacement.INDOORS) }  // приоритет по погоде (в помещении, на улице)
+            .map {
+                locationService.addLocationPriorityByPaymentConditions(
+                    it,
+                    dto.payment
+                )
+            }                // приоритет по типу оплаты TODO стоит сделать фильтрацию по этому критерию
             .toList()
-        if (dto.withLoadFactor == true) {
+        if (dto.loadFactor == true) {                                                                       // приоритет по загруженности
             val dateTimeNow = LocalDateTime.now()
             locationsBySubjectsWithPriority
                 .map { locationService.addLocationPriorityByLoadFactor(it, dateTimeNow) }
@@ -82,7 +118,7 @@ class RouteService(
 
         // берем определенное количество локаций исходя из запланированной продолжительности посещения
         // TODO брать из routeSpeedType ???
-        val visitDurationMinutes = getVisitDurationMinutes(dto.dateNavigation)
+        val visitDurationMinutes = getVisitDurationMinutes(dto.dateTimeStart, dto.dateTimeEnd)
         val locationCount = locationService.getVisitsNumber(sortedLocationsByPriority, visitDurationMinutes)
         val sortedLocationsByPriorityAndVisitDuration: List<Location> =
             sortedLocationsByPriority.take(locationCount)
@@ -90,20 +126,21 @@ class RouteService(
         // определяем порядок локаций исходя из их местоположения на карте
         val locationRouteList: List<Location> = sortByClosestLocations(
             sortedLocationsByPriorityAndVisitDuration,
-            dto.placeNavigation
+            dto.startPlaceId,
+            dto.finishPlaceId,
         )
-        return mapboxService.makeRoute(locationRouteList)
+        return mapboxService.makeRoute(locationRouteList, dto.movement ?: MovementRouteType.WALKING)
     }
 
     fun getVisitDurationMinutes(
-        dates: DateNavigationDTO?,
+        dateStart: LocalDateTime?,
+        dateFinish: LocalDateTime?,
     ): Int {
-        if (dates?.dateFinish == null) {
+        if (dateFinish == null || dateStart == null) {
             return DEFAULT_VISIT_DURATION_MINUTES
         }
 
-        val dateStart = dates.dateStart ?: LocalDateTime.now()
-        return dates.dateFinish.toLocalTime().minute - dateStart.toLocalTime().minute
+        return dateFinish.toLocalTime().minute - dateStart.toLocalTime().minute
     }
 
     // val numbers = listOf(listOf(1, 2, 3), listOf(4, 5), listOf(6))
@@ -118,11 +155,12 @@ class RouteService(
 
     fun sortByClosestLocations(
         locations: List<Location>,
-        placeNavigation: PlaceNavigationDTO?
+        startLocationId: Long?,
+        finishLocationId: Long?,
     ): List<Location> {
         // определяем точку входа маршрута (по умолчанию - главный вход (центральный павильон))
         val locationStart: Location =
-            locationService.getByPlaceId(placeNavigation?.startPlaceId ?: DEFAULT_START_PLACE_ID)
+            locationService.getByPlaceId(startLocationId ?: DEFAULT_START_PLACE_ID)
         val nodeStart: RouteNode =
             coordinatesService.getRouteNodeByCoordinateId(locationStart.coordinates.id)
 
@@ -153,6 +191,7 @@ class RouteService(
     }
 
     companion object {
+        const val DEFAULT_PRIORITY = 500
         const val DEFAULT_VISIT_DURATION_MINUTES = 120
         const val DEFAULT_ROUND_ROBIN_STRATEGY = 1
         const val DEFAULT_START_PLACE_ID = 334L

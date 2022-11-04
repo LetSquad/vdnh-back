@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import ru.vdnh.model.dto.FastNavigationRequestDTO
+import ru.vdnh.model.dto.RouteNavigationDTO
 import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.service.RouteService
 
@@ -33,7 +33,7 @@ class RouteController(
         summary = "Построение быстрого маршрута по критериям"
     )
     @PostMapping("navigate")
-    fun getNavigateRoute(@RequestBody dto: FastNavigationRequestDTO): MapRouteDataDTO {
+    fun getNavigateRoute(@RequestBody dto: RouteNavigationDTO): MapRouteDataDTO {
         return routeService.getNavigateRoute(dto)
     }
 }
