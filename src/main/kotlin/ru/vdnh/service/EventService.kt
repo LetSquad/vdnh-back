@@ -10,10 +10,9 @@ import ru.vdnh.repository.EventRepository
 
 @Service
 class EventService(
-    val eventRepository: EventRepository,
-    val eventMapper: EventMapper,
-
-    val placeService: PlaceService
+    private val eventRepository: EventRepository,
+    private val eventMapper: EventMapper,
+    private val placeService: PlaceService
 ) {
 
     fun getAllEvents(): List<Event> {

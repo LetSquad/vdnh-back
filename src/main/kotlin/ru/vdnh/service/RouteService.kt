@@ -10,8 +10,7 @@ class RouteService(
     private val routeRepository: RouteRepository,
     private val placeService: PlaceService,
     private val mapboxService: MapboxService,
-
-    val locationMapper: LocationMapper
+    private val locationMapper: LocationMapper
 ) {
 
     fun getPreparedRoute(id: Long): MapRouteDataDTO {

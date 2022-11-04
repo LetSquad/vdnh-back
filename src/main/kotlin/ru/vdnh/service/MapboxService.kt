@@ -14,8 +14,8 @@ import ru.vdnh.model.dto.MapRouteDataDTO
 
 @Service
 class MapboxService(
-    val mapRouteMapper: MapRouteMapper,
-    val mapboxConfigProperties: MapboxConfigProperties
+    private val mapRouteMapper: MapRouteMapper,
+    private val mapboxConfigProperties: MapboxConfigProperties
 ) {
 
     fun makeRoute(locations: List<Location>): MapRouteDataDTO {

@@ -14,7 +14,7 @@ import ru.vdnh.service.EventService
 @Tag(name = "Методы работы с событиями")
 @RestController
 @RequestMapping("event")
-class EventController(val eventService: EventService) {
+class EventController(private val eventService: EventService) {
     @Operation(
         summary = "Получение события по его идентификатору"
     )

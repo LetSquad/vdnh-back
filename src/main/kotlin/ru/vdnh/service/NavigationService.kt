@@ -14,10 +14,10 @@ import java.util.stream.Collectors
 
 @Service
 class NavigationService(
-    val locationService: LocationService,
-    val coordinatesService: CoordinatesService,
-    val graphService: GraphService,
-    val mapboxService: MapboxService,
+    private val locationService: LocationService,
+    private val coordinatesService: CoordinatesService,
+    private val graphService: GraphService,
+    private val mapboxService: MapboxService,
 ) {
 
     // TODO сделать кастомные исключения
