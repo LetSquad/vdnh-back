@@ -5,6 +5,7 @@ import ru.vdnh.model.domain.Location
 import ru.vdnh.model.enums.CategoryType
 import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
+import ru.vdnh.model.enums.PaymentRequirements
 import ru.vdnh.model.enums.PopularNavigationType
 import ru.vdnh.model.enums.RouteDifficultType
 import java.time.LocalDateTime
@@ -90,20 +91,18 @@ class PriorityService {
         return 0
     }
 
-    fun getPriorityByPaymentConditions(
+    fun getPriorityByPaymentRequirements(
         location: Location,
-        param: PaymentConditions?
+        param: PaymentRequirements?
     ): Int {
-        if (location.paymentConditions == null) {
-            return 0
-        }
+        if (location.paymentConditions == null || param == null) return 0
 
-        if (param == null) {
-            return 0
-        }
-
-        if (location.paymentConditions == param) {
-            return PRIORITY
+        if (location.paymentConditions == PaymentConditions.FREE) {
+            return when (param) {
+                PaymentRequirements.FREE -> PRIORITY
+                PaymentRequirements.CHEAP -> PRIORITY / 2
+                else -> 0
+            }
         }
 
         return 0

@@ -93,7 +93,7 @@ class RouteService(
 //            .map { locationService.addLocationPriorityByVisitorTypeAndNumber(it, dto.peopleNumber) }        // приоритет по количеству посетителей
 //            .map { locationService.addLocationPriorityByLocationPlacement(it, LocationPlacement.INDOORS) }  // приоритет по погоде (в помещении, на улице)
             .map {
-                locationService.addLocationPriorityByPaymentConditions(
+                locationService.addLocationPriorityByPaymentRequirements(
                     it,
                     dto.payment
                 )
