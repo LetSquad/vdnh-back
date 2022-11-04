@@ -7,7 +7,8 @@ import ru.vdnh.model.enums.VisitorNavigationType
 import java.time.Duration
 
 data class Location(
-    val coordinates: Coordinates, // TODO у всех есть координаты или нет?
+    val locationId: Long,
+    val coordinates: Coordinates,
     val locationCodeType: CategoryType,
 
     val schedule: Schedule?, // TODO сделать фильтрацию на основе расписания

@@ -30,19 +30,21 @@ class EventService(
         return eventsDomainList
     }
 
-    fun findEvent(id: BigInteger): EventDTO {
-        val event = eventRepository.findEvent(id)
-        val placesIdByEventId: List<Long> = eventRepository.getPlacesByEventId(event.id)
-        val placesByEventId: List<Place> = placesIdByEventId
-            .map { placeService.getPlaceById(BigInteger.valueOf(it)) }
+    fun getAllActiveEvents(): List<Event> {
+        val events: List<EventEntity> = eventRepository.getAllActiveEvents()
+        val eventsDomainList = mutableListOf<Event>()
+        for (event in events) {
+            val placesIdByEventId: List<Long> = eventRepository.getPlacesByEventId(event.id)
+            val placesByEventId: List<Place> = placesIdByEventId
+                .map { placeService.getPlaceById(BigInteger.valueOf(it)) }
 
-        return event
-            .let { eventMapper.entityToDomain(it, placesByEventId) }
-            .let { eventMapper.domainToDTO(it) }
+                eventsDomainList.add(eventMapper.entityToDomain(event, placesByEventId))
+        }
+        return eventsDomainList
     }
 
-    fun getByCoordinatesId(coordinatesId: Long): EventDTO {
-        val event = eventRepository.getByCoordinatesId(coordinatesId)
+    fun findEvent(id: BigInteger): EventDTO {
+        val event = eventRepository.findEvent(id)
         val placesIdByEventId: List<Long> = eventRepository.getPlacesByEventId(event.id)
         val placesByEventId: List<Place> = placesIdByEventId
             .map { placeService.getPlaceById(BigInteger.valueOf(it)) }

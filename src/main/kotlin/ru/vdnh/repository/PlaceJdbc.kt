@@ -12,7 +12,7 @@ class PlaceJdbc(
     private val placeRowMapper: PlaceRowMapper
 ) : PlaceRepository {
 
-    override fun getAllPlaces(): List<PlaceEntity> {
+    override fun getAllActivePlaces(): List<PlaceEntity> {
         return jdbcTemplate.query(
             "$SQL_SELECT_ENTITY WHERE p.is_active = true", placeRowMapper
         )
@@ -43,12 +43,6 @@ class PlaceJdbc(
             "$SQL_SELECT_ENTITY WHERE p.is_active = true AND p.coordinates_id = ?", placeRowMapper,
             coordinatesId
         )!!
-    }
-
-    override fun existById(placeId: Long): Boolean {
-        return jdbcTemplate.query("SELECT * from place where id = ?", { rs, _ ->
-            rs.getLong("id")
-        }, placeId).isNotEmpty()
     }
 
     override fun getPlacesByRouteId(id: BigInteger): List<PlaceEntity> {

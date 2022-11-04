@@ -20,9 +20,9 @@ class LocationPropertiesMapper {
             KEY_SHORT_TITLE_CN to createShortTitle(place.titleCn)
         ),
         type = mapOf(
-            KEY_NAME_RU to place.type.name,
-            KEY_NAME_EN to place.type.nameEn,
-            KEY_NAME_CN to place.type.nameCn
+            KEY_TYPE_RU to place.type.name,
+            KEY_TYPE_EN to place.type.nameEn,
+            KEY_TYPE_CN to place.type.nameCn
         ),
         icon = place.type.iconCode,
         color = place.type.iconColor,
@@ -43,9 +43,9 @@ class LocationPropertiesMapper {
             KEY_SHORT_TITLE_CN to createShortTitle(event.titleCn)
         ),
         type = mapOf(
-            KEY_NAME_RU to event.type.name,
-            KEY_NAME_EN to event.type.nameEn,
-            KEY_NAME_CN to event.type.nameCn
+            KEY_TYPE_RU to event.type.name,
+            KEY_TYPE_EN to event.type.nameEn,
+            KEY_TYPE_CN to event.type.nameCn
         ),
         icon = event.type.iconCode,
         color = event.type.iconColor,
@@ -75,9 +75,9 @@ class LocationPropertiesMapper {
         const val KEY_SHORT_TITLE_RU = "shortTitleRu"
         const val KEY_SHORT_TITLE_EN = "shortTitleEn"
         const val KEY_SHORT_TITLE_CN = "shortTitleCn"
-        const val KEY_NAME_RU = "nameRu"
-        const val KEY_NAME_EN = "nameEn"
-        const val KEY_NAME_CN = "nameCn"
+        const val KEY_TYPE_RU = "typeRu"
+        const val KEY_TYPE_EN = "typeEn"
+        const val KEY_TYPE_CN = "typeCn"
         const val KEY_SHORT_TITLE_LENGTH = 30
         const val MAX_PRIORITY = 200
         const val PRIORITY_COEF = 6

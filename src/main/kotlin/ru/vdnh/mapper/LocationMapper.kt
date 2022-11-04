@@ -5,6 +5,9 @@ import ru.vdnh.model.domain.Coordinates
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.Place
+import ru.vdnh.model.dto.GeometryRouteDTO
+import ru.vdnh.model.dto.MapPointDTO
+import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.enums.CategoryType
 import ru.vdnh.model.enums.VisitorNavigationType
 
@@ -13,6 +16,7 @@ import ru.vdnh.model.enums.VisitorNavigationType
 class LocationMapper{
 
     fun placeToLocation(domain: Place) = Location(
+        locationId = domain.id,
         coordinates = domain.coordinates,
         locationCodeType = CategoryType.PLACE,
         schedule = domain.schedule,
@@ -24,6 +28,7 @@ class LocationMapper{
     )
 
     fun eventToLocation(domain: Event) = Location(
+        locationId = domain.id,
         coordinates = getCoordinates(domain),
         locationCodeType = CategoryType.EVENT,
         schedule = domain.schedule,
@@ -38,10 +43,16 @@ class LocationMapper{
         if (domain.coordinates != null) {
             return domain.coordinates
         }
-        if (domain.places != null) {
-            return domain.places[0].coordinates
-        }
 
-        throw RuntimeException("Event ${domain.id} has no coordinates")
+        return domain.places[0].coordinates
     }
+
+    fun locationsToRouteDTO(locations: List<Location>) = RouteDTO(
+        GeometryRouteDTO(
+            "LineString",
+            locations.map { listOf(it.coordinates.longitude, it.coordinates.latitude) }
+        ),
+
+        locations.map { MapPointDTO(it.locationId, it.locationCodeType) }
+    )
 }
