@@ -3,7 +3,7 @@ package ru.vdnh.service
 import org.springframework.stereotype.Service
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.enums.PopularNavigationType
-import ru.vdnh.model.enums.RouteSpeedType
+import ru.vdnh.model.enums.RouteDifficultType
 import ru.vdnh.model.enums.VisitorNavigationType
 import ru.vdnh.model.enums.CategoryType
 import ru.vdnh.model.enums.LocationPlacement
@@ -33,7 +33,7 @@ class PriorityService {
             return location.priority
         }
 
-        if (location.priority < 100 && param == PopularNavigationType.HIDDEN_GEMS) {
+        if (location.priority < 100 && param == PopularNavigationType.HIDDEN) {
             return PRIORITY
         }
         if (location.priority < 500 && param == PopularNavigationType.BALANCED) {
@@ -48,7 +48,7 @@ class PriorityService {
 
     fun getPriorityByRouteSpeed(
         location: Location,
-        param: RouteSpeedType?
+        param: RouteDifficultType?
     ): Int {
         if (location.visitTime == null) {
             return 0
@@ -59,13 +59,13 @@ class PriorityService {
         }
 
         val minutesVisitTime = location.visitTime.toMinutes()
-        if (minutesVisitTime < 15 && param == RouteSpeedType.FAST) {
+        if (minutesVisitTime < 15 && param == RouteDifficultType.HARD) {
             return PRIORITY
         }
-        if (minutesVisitTime < 30 && param == RouteSpeedType.MEDIUM) {
+        if (minutesVisitTime < 30 && param == RouteDifficultType.MEDIUM) {
             return PRIORITY
         }
-        if (param == RouteSpeedType.SLOW) {
+        if (param == RouteDifficultType.EASY) {
             return PRIORITY
         }
 
