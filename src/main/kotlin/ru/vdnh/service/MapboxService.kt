@@ -6,16 +6,15 @@ import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import org.springframework.stereotype.Service
+import ru.vdnh.mapper.MapRouteMapper
 import ru.vdnh.model.MapboxConfigProperties
 import ru.vdnh.model.domain.Location
-import ru.vdnh.model.dto.GeometryRouteDTO
-import ru.vdnh.model.dto.MapPointDTO
 import ru.vdnh.model.dto.MapRouteDataDTO
-import ru.vdnh.model.dto.RouteDTO
 
 
 @Service
 class MapboxService(
+    val mapRouteMapper: MapRouteMapper,
     val mapboxConfigProperties: MapboxConfigProperties
 ) {
 
@@ -35,15 +34,7 @@ class MapboxService(
                 response.body()?.routes()?.get(0)?.geometry()
             val lineString: LineString = LineString.fromPolyline(geometryStr!!, PRECISION_6)
 
-            return MapRouteDataDTO(
-                RouteDTO(
-                    GeometryRouteDTO(
-                        "LineString",
-                        lineString.coordinates().map { listOf(it.longitude().toBigDecimal(), it.latitude().toBigDecimal()) }
-                        ),
-                    locations.map { MapPointDTO(it.locationId, it.locationCodeType) }
-                )
-            )
+            return mapRouteMapper.toMapRouteDTO(locations, lineString)
         }
 
         throw RuntimeException("response not ok")
