@@ -6,6 +6,5 @@ spring:
 springdoc:
   swagger-ui:
     path: '/swagger-ui'
-
 mapbox:
   accessToken: ''
