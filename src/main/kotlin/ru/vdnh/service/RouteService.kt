@@ -33,7 +33,6 @@ class RouteService(
         return mapboxService.makeRoute(locations)
     }
 
-    // TODO сделать кастомные исключения
     // +/-placeNavigation: PlaceNavigationDTO?,
     // +/-dateNavigation: DateNavigationDTO?,
     //
