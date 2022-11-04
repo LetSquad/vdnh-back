@@ -11,6 +11,7 @@ import ru.vdnh.exception.MapboxException
 import ru.vdnh.mapper.MapRouteMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.dto.MapRouteDataDTO
+import ru.vdnh.model.enums.MovementRouteType
 
 
 @Service
@@ -19,12 +20,15 @@ class MapboxService(
     private val mapboxConfigProperties: MapboxConfigProperties
 ) {
 
-    fun makeRoute(locations: List<Location>): MapRouteDataDTO {
+    fun makeRoute(
+        locations: List<Location>,
+        movementType: MovementRouteType
+    ): MapRouteDataDTO {
         val points: List<Point> = locations
             .map { Point.fromLngLat(it.coordinates.longitude.toDouble(), it.coordinates.latitude.toDouble()) }
 
         val response = MapboxDirections.builder()
-            .profile(DirectionsCriteria.PROFILE_WALKING)
+            .profile(if (movementType == MovementRouteType.WALKING) DirectionsCriteria.PROFILE_WALKING else DirectionsCriteria.PROFILE_CYCLING)
             .accessToken(mapboxConfigProperties.accessToken)
             .waypoints(points)
             .build()

@@ -7,7 +7,6 @@ import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
 import ru.vdnh.model.enums.PopularNavigationType
 import ru.vdnh.model.enums.RouteDifficultType
-import ru.vdnh.model.enums.VisitorNavigationType
 import java.time.LocalDateTime
 
 
@@ -24,7 +23,7 @@ class LocationService(
             .let { locationMapper.placeToLocation(it) }
     }
 
-    fun getAllLocations(): List<Location> {
+    fun getAllActiveLocations(): List<Location> {
         val locationsBySubject = mutableListOf<Location>()
         locationsBySubject.addAll(placeService.getAllActivePlaces()
             .map { locationMapper.placeToLocation(it) }
@@ -73,14 +72,6 @@ class LocationService(
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
             .map { Pair(it.first, priorityService.getPriorityByRouteSpeed(it.first, routeDifficultType)) }
-    }
-
-    fun addLocationPriorityByVisitorType(
-        locationsWithPriority: List<Pair<Location, Int>>,
-        visitorType: VisitorNavigationType?,
-    ): List<Pair<Location, Int>> {
-        return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByVisitorType(it.first, visitorType)) }
     }
 
     fun addLocationPriorityByLocationPlacement(

@@ -2,12 +2,11 @@ package ru.vdnh.service
 
 import org.springframework.stereotype.Service
 import ru.vdnh.model.domain.Location
-import ru.vdnh.model.enums.PopularNavigationType
-import ru.vdnh.model.enums.RouteDifficultType
-import ru.vdnh.model.enums.VisitorNavigationType
 import ru.vdnh.model.enums.CategoryType
 import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
+import ru.vdnh.model.enums.PopularNavigationType
+import ru.vdnh.model.enums.RouteDifficultType
 import java.time.LocalDateTime
 
 
@@ -72,25 +71,6 @@ class PriorityService {
         return 0
     }
 
-    fun getPriorityByVisitorType(
-        location: Location,
-        param: VisitorNavigationType?
-    ): Int {
-        if (location.visitorType == null) {
-            return 0
-        }
-
-        if (param == null) {
-            return 0
-        }
-
-        if (location.visitorType == param) {
-            return PRIORITY
-        }
-
-        return 0
-    }
-
     fun getPriorityByLocationPlacement(
         location: Location,
         param: LocationPlacement?
@@ -142,8 +122,11 @@ class PriorityService {
     }
 
     companion object {
-        const val PRIORITY: Int = 100
-        const val DEFAULT_EVENT_PRIORITY: Int = 100
+        const val PRIORITY: Int = -50
+
+        // TODO по базе у событий приоритет ниже чем у мест.
+        //  Возможно, стоит ввести отдельный шаг приоритета под события
+        const val DEFAULT_EVENT_PRIORITY: Int = -100
     }
 
 }
