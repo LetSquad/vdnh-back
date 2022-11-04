@@ -55,7 +55,7 @@ class LocationService(
         locationsWithPriority: List<Pair<Location, Int>>,
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByLocationType(it.first, it.first.locationCodeType)) }
+            .map { Pair(it.first, it.second - priorityService.getPriorityByLocationType(it.first, it.first.locationCodeType)) }
     }
 
     fun addLocationPriorityByPopular(
@@ -63,7 +63,7 @@ class LocationService(
         popularType: PopularNavigationType?,
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByPopular(it.first, popularType)) }
+            .map { Pair(it.first, it.second - priorityService.getPriorityByPopular(it.first, popularType)) }
     }
 
     fun addLocationPriorityByRouteDifficulty(
@@ -71,7 +71,7 @@ class LocationService(
         routeDifficultType: RouteDifficultType?,
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByRouteSpeed(it.first, routeDifficultType)) }
+            .map { Pair(it.first, it.second - priorityService.getPriorityByRouteSpeed(it.first, routeDifficultType)) }
     }
 
     fun addLocationPriorityByLocationPlacement(
@@ -79,7 +79,7 @@ class LocationService(
         locationPlacement: LocationPlacement?,
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByLocationPlacement(it.first, locationPlacement)) }
+            .map { Pair(it.first, it.second -priorityService.getPriorityByLocationPlacement(it.first, locationPlacement)) }
     }
 
     fun addLocationPriorityByPaymentRequirements(
@@ -87,7 +87,7 @@ class LocationService(
         paymentRequirements: PaymentRequirements?,
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByPaymentRequirements(it.first, paymentRequirements)) }
+            .map { Pair(it.first, it.second -priorityService.getPriorityByPaymentRequirements(it.first, paymentRequirements)) }
     }
 
     fun addLocationPriorityByLoadFactor(
@@ -95,7 +95,7 @@ class LocationService(
         dateTime: LocalDateTime
     ): List<Pair<Location, Int>> {
         return locationsWithPriority
-            .map { Pair(it.first, priorityService.getPriorityByLoadFactor(it.first, dateTime)) }
+            .map { Pair(it.first, it.second -priorityService.getPriorityByLoadFactor(it.first, dateTime)) }
     }
 
     fun getVisitsNumber(

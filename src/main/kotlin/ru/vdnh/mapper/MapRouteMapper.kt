@@ -5,20 +5,18 @@ import org.springframework.stereotype.Component
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.dto.GeometryRouteDTO
 import ru.vdnh.model.dto.MapPointDTO
-import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.dto.RouteDTO
+import java.util.*
 
 @Component
 class MapRouteMapper {
 
-    fun toMapRouteDTO(locations: List<Location>, lineString: LineString) = MapRouteDataDTO(
-        mapData = RouteDTO(
-            geometry = GeometryRouteDTO(
-                type = "LineString",
-                coordinates = lineString.coordinates()
-                    .map { listOf(it.longitude().toBigDecimal(), it.latitude().toBigDecimal()) }
-            ),
-            mapPoints = locations.map { MapPointDTO(it.locationId, it.locationCodeType) }
-        )
+    fun toRouteDTO(locations: List<Location>, lineString: LineString) = RouteDTO(
+        id = UUID.randomUUID(),
+        geometry = GeometryRouteDTO(
+            type = "LineString",
+            coordinates = lineString.coordinates().map { listOf(it.longitude().toBigDecimal(), it.latitude().toBigDecimal()) }
+        ),
+        mapPoints = locations.map { MapPointDTO(it.locationId, it.locationCodeType) }
     )
 }

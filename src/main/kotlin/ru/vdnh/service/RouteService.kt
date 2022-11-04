@@ -2,10 +2,12 @@ package ru.vdnh.service
 
 import org.jgrapht.traverse.ClosestFirstIterator
 import org.springframework.stereotype.Service
+import ru.vdnh.config.RouteNavigateConfigProperties
 import ru.vdnh.mapper.LocationMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.MapRouteDataDTO
+import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.dto.RouteNavigationDTO
 import ru.vdnh.model.enums.MovementRouteType
 import ru.vdnh.repository.RouteRepository
@@ -22,7 +24,9 @@ class RouteService(
     private val mapboxService: MapboxService,
 
     private val routeRepository: RouteRepository,
-    private val locationMapper: LocationMapper
+    private val locationMapper: LocationMapper,
+
+    private val navigateProperties: RouteNavigateConfigProperties
 ) {
 
     fun getPreparedRoute(id: Long): MapRouteDataDTO {
@@ -30,7 +34,7 @@ class RouteService(
         val locations = placeService.getPlacesByRouteId(routeEntity.id)
             .map { locationMapper.placeToLocation(it) }
 
-        return mapboxService.makeRoute(locations, MovementRouteType.WALKING)
+        return MapRouteDataDTO(listOf(mapboxService.makeRoute(locations, MovementRouteType.WALKING)))
     }
 
     //    // date
@@ -54,7 +58,7 @@ class RouteService(
     fun updateTagsFromDto(
         tagsFromRequest: List<String>?,
         kids: Boolean?
-    ): List<String>? {
+    ): List<String> {
         if (kids == true) {
             val resultTags: MutableList<String> = tagsFromRequest?.toMutableList() ?: mutableListOf()
             resultTags.add("KIDS")
@@ -62,77 +66,65 @@ class RouteService(
             return resultTags
         }
 
-        return tagsFromRequest
+        return tagsFromRequest ?: listOf()
     }
 
     fun getNavigateRoute(dto: RouteNavigationDTO): MapRouteDataDTO {
-        val resultTags: List<String>? = updateTagsFromDto(dto.tags, dto.peopleNumber?.kid != 0)
+        val resultTags: List<String> = updateTagsFromDto(dto.tags, dto.peopleNumber?.kid != 0)
 
         // берем все места и события
-        val locationsBySubjects: List<List<Location>> =
-            resultTags?.map { locationService.getLocationsBySubject(it) }
-                ?: listOf(locationService.getAllActiveLocations())
+        val locations: List<List<Location>> = if (resultTags.isEmpty()) listOf(locationService.getAllActiveLocations()) else resultTags.map { locationService.getLocationsBySubject(it) }
 
         // задаем каждой локации приоритет исходя из списка параметров
         // TODO отфильтровать места по расписанию исходя из даты
-        val locationsBySubjectsWithPriority: List<List<Pair<Location, Int>>> = locationsBySubjects
+        val locationsWithPriority: List<List<Pair<Location, Int>>> = locations
             .asSequence()
-            .map { it -> it.map { Pair(it, DEFAULT_PRIORITY) } }
+            .map { it -> it.map { Pair(it, navigateProperties.priority.start) } }
             .map { locationService.addLocationPriorityByLocationType(it) }                                  // приоритет типу локации (событие или место)
-            .map {
-                locationService.addLocationPriorityByPopular(
-                    it,
-                    dto.popularity
-                )
-            }                       // приоритет по популярности места
-            .map {
-                locationService.addLocationPriorityByRouteDifficulty(
-                    it,
-                    dto.difficulty
-                )
-            }               // приоритет по сложности маршрута TODO стоит завязать критерий на количество посещаемых мест
+            .map { locationService.addLocationPriorityByPopular(it, dto.popularity) }                       // приоритет по популярности места
+            .map { locationService.addLocationPriorityByRouteDifficulty(it, dto.difficulty) }               // приоритет по сложности маршрута TODO стоит завязать критерий на количество посещаемых мест
 //            .map { locationService.addLocationPriorityByVisitorTypeAndNumber(it, dto.peopleNumber) }        // приоритет по количеству посетителей
 //            .map { locationService.addLocationPriorityByLocationPlacement(it, LocationPlacement.INDOORS) }  // приоритет по погоде (в помещении, на улице)
-            .map {
-                locationService.addLocationPriorityByPaymentRequirements(
-                    it,
-                    dto.payment
-                )
-            }                // приоритет по типу оплаты TODO стоит сделать фильтрацию по этому критерию
+            .map { locationService.addLocationPriorityByPaymentRequirements(it, dto.payment) }                // приоритет по типу оплаты TODO стоит сделать фильтрацию по этому критерию
             .toList()
         if (dto.loadFactor == true) {                                                                       // приоритет по загруженности
             val dateTimeNow = LocalDateTime.now()
-            locationsBySubjectsWithPriority
+            locationsWithPriority
                 .map { locationService.addLocationPriorityByLoadFactor(it, dateTimeNow) }
         }
 
         // мержим списки по определенным тематикам в один
-        // TODO сделать мерж на основе приоритетов
-        val locationsByOneSubjectWithPriority: List<Pair<Location, Int>> =
-            locationsBySubjectsWithPriority.magicRoundRobin(DEFAULT_ROUND_ROBIN_STRATEGY)
+        val mergedByTagsLocations: List<Pair<Location, Int>> =
+            locationsWithPriority.magicRoundRobin(navigateProperties.locationMergeStrategy)
 
         // сортируем по приоритету
-        val sortedLocationsByPriority: List<Location> =
-            locationsByOneSubjectWithPriority
-                .sortedByDescending { it.second }
+        val sortedLocationsByPriority: List<Location> = mergedByTagsLocations
+                .sortedBy { it.second }
                 .map { it.first }
 
+        // формируем варианты маршрутов
+        val locationVariants: List<List<Location>> =
+            sortedLocationsByPriority
+                .withIndex()
+                .groupBy { it.index % navigateProperties.routeVariantsCount == 0 }
+                .map { entry -> entry.value.map { it.value } }
+
         // берем определенное количество локаций исходя из запланированной продолжительности посещения
-        // TODO брать из routeSpeedType ???
         val localStartTime: LocalDateTime? = dto.dateTimeStart?.atZoneSameInstant(MOSCOW_TIME_ZONE)?.toLocalDateTime()
         val localEndTime: LocalDateTime? = dto.dateTimeEnd?.atZoneSameInstant(MOSCOW_TIME_ZONE)?.toLocalDateTime()
         val visitDurationMinutes = getVisitDurationMinutes(localStartTime, localEndTime)
         val locationCount = locationService.getVisitsNumber(sortedLocationsByPriority, visitDurationMinutes)
-        val sortedLocationsByPriorityAndVisitDuration: List<Location> =
-            sortedLocationsByPriority.take(locationCount)
+        val locationsVariantsForRoute: List<List<Location>> =
+            locationVariants.map { it.take(locationCount) }
 
         // определяем порядок локаций исходя из их местоположения на карте
-        val locationRouteList: List<Location> = sortByClosestLocations(
-            sortedLocationsByPriorityAndVisitDuration,
-            dto.startPlaceId,
-            dto.finishPlaceId,
-        )
-        return mapboxService.makeRoute(locationRouteList, dto.movement ?: MovementRouteType.WALKING)
+        val resultLocationRoutes: List<List<Location>> =
+            locationsVariantsForRoute.map { sortByClosestLocations(it, dto.startPlaceId, dto.finishPlaceId) }
+
+        // формируем маршрут mapbox
+        val resultRoutes: List<RouteDTO> = resultLocationRoutes.map { mapboxService.makeRoute(it, dto.movement ?: MovementRouteType.WALKING) }
+
+        return MapRouteDataDTO(resultRoutes)
     }
 
     fun getVisitDurationMinutes(
@@ -140,7 +132,7 @@ class RouteService(
         dateFinish: LocalDateTime?,
     ): Int {
         if (dateFinish == null || dateStart == null) {
-            return DEFAULT_VISIT_DURATION_MINUTES
+            return navigateProperties.default.visitTimeMinutes
         }
 
         return dateFinish.toLocalTime().minute - dateStart.toLocalTime().minute
@@ -163,7 +155,7 @@ class RouteService(
     ): List<Location> {
         // определяем точку входа маршрута (по умолчанию - главный вход (центральный павильон))
         val locationStart: Location =
-            locationService.getByPlaceId(startLocationId ?: DEFAULT_START_PLACE_ID)
+            locationService.getByPlaceId(startLocationId ?: navigateProperties.default.startPlaceId)
         val nodeStart: RouteNode =
             coordinatesService.getRouteNodeByCoordinateId(locationStart.coordinates.id)
 
@@ -194,12 +186,6 @@ class RouteService(
     }
 
     companion object {
-        const val DEFAULT_PRIORITY = 500
-        const val DEFAULT_VISIT_DURATION_MINUTES = 120
-        const val DEFAULT_ROUND_ROBIN_STRATEGY = 1
-        const val DEFAULT_START_PLACE_ID = 334L
-        const val DEFAULT_FINISH_PLACE_ID = 334L
-
         private val MOSCOW_TIME_ZONE = ZoneId.of("UTC+3")
     }
 }

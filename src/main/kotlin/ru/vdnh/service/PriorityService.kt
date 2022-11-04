@@ -1,6 +1,7 @@
 package ru.vdnh.service
 
 import org.springframework.stereotype.Service
+import ru.vdnh.config.RouteNavigateConfigProperties
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.enums.CategoryType
 import ru.vdnh.model.enums.LocationPlacement
@@ -12,13 +13,15 @@ import java.time.LocalDateTime
 
 
 @Service
-class PriorityService {
+class PriorityService(
+    private val navigateProperties: RouteNavigateConfigProperties
+) {
 
     fun getPriorityByLocationType(
         location: Location,
         param: CategoryType?,
     ): Int {
-        return if (param == CategoryType.EVENT) DEFAULT_EVENT_PRIORITY else 0
+        return if (param == CategoryType.EVENT) navigateProperties.priority.eventStart else 0
     }
 
     fun getPriorityByPopular(
@@ -34,13 +37,13 @@ class PriorityService {
         }
 
         if (location.priority < 100 && param == PopularNavigationType.HIDDEN) {
-            return PRIORITY
+            return navigateProperties.priority.coefficient
         }
         if (location.priority < 500 && param == PopularNavigationType.BALANCED) {
-            return PRIORITY
+            return navigateProperties.priority.coefficient
         }
         if (param == PopularNavigationType.POPULAR) {
-            return PRIORITY
+            return navigateProperties.priority.coefficient
         }
 
         return location.priority
@@ -60,13 +63,13 @@ class PriorityService {
 
         val minutesVisitTime = location.visitTime.toMinutes()
         if (minutesVisitTime < 15 && param == RouteDifficultType.HARD) {
-            return PRIORITY
+            return navigateProperties.priority.coefficient
         }
         if (minutesVisitTime < 30 && param == RouteDifficultType.MEDIUM) {
-            return PRIORITY
+            return navigateProperties.priority.coefficient
         }
         if (param == RouteDifficultType.EASY) {
-            return PRIORITY
+            return navigateProperties.priority.coefficient
         }
 
         return 0
@@ -85,7 +88,7 @@ class PriorityService {
         }
 
         if (location.placement == param) {
-            return PRIORITY
+            return navigateProperties.priority.coefficient
         }
 
         return 0
@@ -99,8 +102,8 @@ class PriorityService {
 
         if (location.paymentConditions == PaymentConditions.FREE) {
             return when (param) {
-                PaymentRequirements.FREE -> PRIORITY
-                PaymentRequirements.CHEAP -> PRIORITY / 2
+                PaymentRequirements.FREE -> navigateProperties.priority.coefficient
+                PaymentRequirements.CHEAP -> navigateProperties.priority.coefficient / 2
                 else -> 0
             }
         }
@@ -118,14 +121,6 @@ class PriorityService {
 
         return location.coordinates.loadFactor[dateTime.dayOfWeek]?.get(dateTime.toLocalTime())?.toInt()
             ?: return 0
-    }
-
-    companion object {
-        const val PRIORITY: Int = -50
-
-        // TODO по базе у событий приоритет ниже чем у мест.
-        //  Возможно, стоит ввести отдельный шаг приоритета под события
-        const val DEFAULT_EVENT_PRIORITY: Int = -100
     }
 
 }
