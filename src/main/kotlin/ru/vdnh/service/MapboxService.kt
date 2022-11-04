@@ -6,8 +6,8 @@ import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import org.springframework.stereotype.Service
+import ru.vdnh.config.MapboxConfigProperties
 import ru.vdnh.mapper.MapRouteMapper
-import ru.vdnh.model.MapboxConfigProperties
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.dto.MapRouteDataDTO
 
@@ -22,12 +22,12 @@ class MapboxService(
         val points: List<Point> = locations
             .map { Point.fromLngLat(it.coordinates.longitude.toDouble(), it.coordinates.latitude.toDouble()) }
 
-        val builder: MapboxDirections.Builder = MapboxDirections.builder()
+        val response = MapboxDirections.builder()
             .profile(DirectionsCriteria.PROFILE_WALKING)
-            .accessToken(mapboxConfigProperties.token)
+            .accessToken(mapboxConfigProperties.accessToken)
             .waypoints(points)
-
-        val response = builder.build().executeCall()
+            .build()
+            .executeCall()
 
         if (response.isSuccessful) {
             val geometryStr: String? =
