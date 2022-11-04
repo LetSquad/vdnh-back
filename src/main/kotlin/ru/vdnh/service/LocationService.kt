@@ -3,7 +3,6 @@ package ru.vdnh.service
 import org.springframework.stereotype.Service
 import ru.vdnh.mapper.LocationMapper
 import ru.vdnh.model.domain.Location
-import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
 import ru.vdnh.model.enums.PopularNavigationType
@@ -20,9 +19,10 @@ class LocationService(
     val locationMapper: LocationMapper
 ) {
 
-    fun makeResultRouteDTO(locations: List<Location>) = MapRouteDataDTO(
-        locationMapper.locationsToRouteDTO(locations)
-    )
+    fun getByPlaceId(placeId: Long): Location {
+        return placeService.getPlaceById(placeId.toBigInteger())
+            .let { locationMapper.placeToLocation(it) }
+    }
 
     fun getAllLocations(): List<Location> {
         val locationsBySubject = mutableListOf<Location>()

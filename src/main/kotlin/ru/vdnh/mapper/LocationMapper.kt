@@ -5,9 +5,6 @@ import ru.vdnh.model.domain.Coordinates
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.Place
-import ru.vdnh.model.dto.GeometryRouteDTO
-import ru.vdnh.model.dto.MapPointDTO
-import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.enums.CategoryType
 import ru.vdnh.model.enums.VisitorNavigationType
 
@@ -47,12 +44,4 @@ class LocationMapper{
         return domain.places[0].coordinates
     }
 
-    fun locationsToRouteDTO(locations: List<Location>) = RouteDTO(
-        GeometryRouteDTO(
-            "LineString",
-            locations.map { listOf(it.coordinates.longitude, it.coordinates.latitude) }
-        ),
-
-        locations.map { MapPointDTO(it.locationId, it.locationCodeType) }
-    )
 }

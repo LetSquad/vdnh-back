@@ -21,9 +21,13 @@
 
         <spring-boot.version>2.7.4</spring-boot.version>
         <springdoc.openapi.version>1.6.12</springdoc.openapi.version>
+
+        <mapbox.version>5.9.0-alpha.1</mapbox.version>
+        <jgrapht.version>1.5.1</jgrapht.version>
     </properties>
 
     <dependencies>
+        <!-- spring -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -37,10 +41,8 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
-        </dependency>
+
+        <!-- kotlin -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
@@ -49,11 +51,15 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
         </dependency>
+
+        <!-- graph -->
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
-            <version>1.5.1</version>
+            <version>${jgrapht.version}</version>
         </dependency>
+
+        <!-- DB -->
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
@@ -62,11 +68,8 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+
+        <!-- openapi -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
@@ -76,6 +79,32 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-kotlin</artifactId>
             <version>${springdoc.openapi.version}</version>
+        </dependency>
+
+        <!-- mapbox-->
+        <dependency>
+            <groupId>com.mapbox.mapboxsdk</groupId>
+            <artifactId>mapbox-sdk-services</artifactId>
+            <version>${mapbox.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>androidx.annotation</groupId>
+                    <artifactId>annotation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- utils -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+        </dependency>
+
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
