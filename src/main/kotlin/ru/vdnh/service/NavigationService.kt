@@ -18,6 +18,7 @@ class NavigationService(
     val locationService: LocationService,
     val coordinatesService: CoordinatesService,
     val graphService: GraphService,
+    val mapboxService: MapboxService,
 ) {
 
     // TODO сделать кастомные исключения
@@ -80,8 +81,7 @@ class NavigationService(
             sortedLocationsByPriorityAndVisitDuration,
             dto.placeNavigation
         )
-
-        return locationService.makeResultRouteDTO(locationRouteList)
+        return mapboxService.makeRoute(locationRouteList)
     }
 
     fun getVisitDurationMinutes(
@@ -110,19 +110,17 @@ class NavigationService(
         placeNavigation: PlaceNavigationDTO?
     ): List<Location> {
         // определяем точку входа маршрута (по умолчанию - главный вход (центральный павильон))
+        val locationStart: Location =
+            locationService.getByPlaceId(placeNavigation?.startPlaceId ?: DEFAULT_START_PLACE_ID)
         val nodeStart: RouteNode =
-            coordinatesService.getRouteNodeByCoordinateId(
-                placeNavigation?.startCoordinateId ?: BigInteger.valueOf(
-                    DEFAULT_ENTER_NODE_ID
-                )
-            )
+            coordinatesService.getRouteNodeByCoordinateId(locationStart.coordinates.id.toBigInteger())
 
         // определяем точку выхода маршрута
         // TODO подбирать точку выхода с маршрута по дефолту ближайшую к любой точке входа/выхода
-        var nodeFinish: RouteNode? = null
-        if (placeNavigation?.finishCoordinatesId != null) {
-            nodeFinish = coordinatesService.getRouteNodeByCoordinateId(placeNavigation.finishCoordinatesId)
-        }
+//        val locationFinish: Location =
+//            locationService.getByPlaceId(placeNavigation?.startPlaceId ?: DEFAULT_FINISH_PLACE_ID)
+//        val nodeFinish: RouteNode =
+//            coordinatesService.getRouteNodeByCoordinateId(locationFinish.coordinates.id.toBigInteger())
 
         // создаем граф на основе точек маршрута
         val routeNodes = locations.stream()
@@ -130,20 +128,15 @@ class NavigationService(
             .collect(Collectors.toList())
 
         routeNodes.add(nodeStart)
-        if (nodeFinish != null) {
-            routeNodes.add(nodeFinish)
-        }
+        val locationsWithStart: MutableList<Location> = locations.toMutableList()
+        locationsWithStart.add(locationStart)
+
         val graph = graphService.createGraphFromRouteNodes(routeNodes)
 
         // определяем кратчайший путь между точками маршрута
         val sortedLocations: MutableList<Location> = mutableListOf()
-        if (nodeFinish == null) {
-            ClosestFirstIterator(graph, nodeStart)
-                .forEach { sortedLocations.add(locations.find { location -> location.coordinates.id == it.coordinatesId }!!) }
-        } else {
-            // TODO подобрать алгоритм под нахождение кратчайшего пути с конечной точкой
-            throw RuntimeException("TODO(Not yet implemented)")
-        }
+        ClosestFirstIterator(graph, nodeStart)
+            .forEach { sortedLocations.add(locationsWithStart.find { location -> location.coordinates.id == it.coordinatesId }!!) }
 
         return sortedLocations
     }
@@ -151,7 +144,8 @@ class NavigationService(
     companion object {
         const val DEFAULT_VISIT_DURATION_MINUTES = 120
         const val DEFAULT_ROUND_ROBIN_STRATEGY = 1
-        const val DEFAULT_ENTER_NODE_ID = 80L
+        const val DEFAULT_START_PLACE_ID = 334L
+        const val DEFAULT_FINISH_PLACE_ID = 334L
     }
 
 }
