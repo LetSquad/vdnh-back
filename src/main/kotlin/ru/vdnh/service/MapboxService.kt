@@ -27,21 +27,25 @@ class MapboxService(
         val points: List<Point> = locations
             .map { Point.fromLngLat(it.coordinates.longitude.toDouble(), it.coordinates.latitude.toDouble()) }
 
-        val response = MapboxDirections.builder()
-            .profile(if (movementType == MovementRouteType.WALKING) DirectionsCriteria.PROFILE_WALKING else DirectionsCriteria.PROFILE_CYCLING)
-            .accessToken(mapboxConfigProperties.accessToken)
-            .waypoints(points)
-            .build()
-            .executeCall()
+        try {
+            val response = MapboxDirections.builder()
+                .profile(if (movementType == MovementRouteType.WALKING) DirectionsCriteria.PROFILE_WALKING else DirectionsCriteria.PROFILE_CYCLING)
+                .accessToken(mapboxConfigProperties.accessToken)
+                .waypoints(points)
+                .build()
+                .executeCall()
 
-        if (response.isSuccessful) {
-            val geometryStr: String? =
-                response.body()?.routes()?.get(0)?.geometry()
-            val lineString: LineString = LineString.fromPolyline(geometryStr!!, PRECISION_6)
+            if (response.isSuccessful) {
+                val geometryStr: String? =
+                    response.body()?.routes()?.get(0)?.geometry()
+                val lineString: LineString = LineString.fromPolyline(geometryStr!!, PRECISION_6)
 
-            return mapRouteMapper.toRouteDTO(locations, lineString)
+                return mapRouteMapper.toRouteDTO(locations, lineString)
+            }
+
+            throw MapboxException("Response from mapbox is not ok: [$response]")
+        } catch (exc: Exception) {
+            throw MapboxException("Unexpected Mapbox error: ${exc.message}")
         }
-
-        throw MapboxException("Response from mapbox is not ok: [$response]")
     }
 }

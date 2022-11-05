@@ -1,5 +1,7 @@
 package ru.vdnh.model.enums
 
 enum class RouteDifficultType {
-    EASY, MEDIUM, HARD
+    HARD,   //быстрый темп
+    MEDIUM, // средний темп
+    EASY    // неспешный
 }

@@ -1,5 +1,6 @@
 package ru.vdnh.model.dto
 
+import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.MovementRouteType
 import ru.vdnh.model.enums.PaymentRequirements
 import ru.vdnh.model.enums.PopularNavigationType
@@ -13,10 +14,11 @@ data class RouteNavigationDTO(
 
     // navigation
     val startPlaceId: Long?,
-    val finishPlaceId: Long?,
+    val finishPlaceId: Long?, // TODO
 
     // criteria
     val peopleNumber: VisitorCountDTO?,
+    val locationPlacement: LocationPlacement?,
     val popularity: PopularNavigationType?,
     val difficulty: RouteDifficultType?,
     val payment: PaymentRequirements?,

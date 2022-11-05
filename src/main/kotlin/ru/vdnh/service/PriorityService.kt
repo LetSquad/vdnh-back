@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import ru.vdnh.config.RouteNavigateConfigProperties
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.enums.CategoryType
-import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.PaymentConditions
 import ru.vdnh.model.enums.PaymentRequirements
 import ru.vdnh.model.enums.PopularNavigationType
@@ -28,67 +27,66 @@ class PriorityService(
         location: Location,
         param: PopularNavigationType?,
     ): Int {
-        if (location.priority == null) {
-            return 0
-        }
+        if (location.priority == null || param == null) return 0
 
-        if (param == null) {
-            return location.priority
-        }
-
-        if (location.priority < 100 && param == PopularNavigationType.HIDDEN) {
-            return navigateProperties.priority.coefficient
-        }
-        if (location.priority < 500 && param == PopularNavigationType.BALANCED) {
-            return navigateProperties.priority.coefficient
-        }
         if (param == PopularNavigationType.POPULAR) {
-            return navigateProperties.priority.coefficient
+            return when (location.priority) {
+                in 0..100 -> navigateProperties.priority.coefficient
+                in 101..500 -> navigateProperties.priority.coefficient / 2
+                in 501..1000 -> -(navigateProperties.priority.coefficient)
+                else -> -navigateProperties.priority.coefficient * 2
+            }
         }
-
-        return location.priority
-    }
-
-    fun getPriorityByRouteSpeed(
-        location: Location,
-        param: RouteDifficultType?
-    ): Int {
-        if (location.visitTime == null) {
-            return 0
+        if (param == PopularNavigationType.BALANCED) {
+            return when (location.priority) {
+                in 0..100 -> navigateProperties.priority.coefficient / 2
+                in 101..500 -> navigateProperties.priority.coefficient
+                in 501..1000 -> navigateProperties.priority.coefficient / 2
+                else -> -navigateProperties.priority.coefficient * 2
+            }
         }
-
-        if (param == null) {
-            return 0
-        }
-
-        val minutesVisitTime = location.visitTime.toMinutes()
-        if (minutesVisitTime < 15 && param == RouteDifficultType.HARD) {
-            return navigateProperties.priority.coefficient
-        }
-        if (minutesVisitTime < 30 && param == RouteDifficultType.MEDIUM) {
-            return navigateProperties.priority.coefficient
-        }
-        if (param == RouteDifficultType.EASY) {
-            return navigateProperties.priority.coefficient
+        if (param == PopularNavigationType.HIDDEN) {
+            return when (location.priority) {
+                in 0..100 -> -(navigateProperties.priority.coefficient)
+                in 101..500 -> navigateProperties.priority.coefficient / 2
+                in 501..1000 -> navigateProperties.priority.coefficient
+                else -> -navigateProperties.priority.coefficient * 2
+            }
         }
 
         return 0
     }
 
-    fun getPriorityByLocationPlacement(
+    fun getPriorityByRouteDifficulty(
         location: Location,
-        param: LocationPlacement?
+        param: RouteDifficultType?
     ): Int {
-        if (location.placement == null) {
-            return 0
-        }
+        if (location.visitTime == null || param == null) return 0
 
-        if (param == null) {
-            return 0
+        val visitTimeMinutes = location.visitTime.toMinutes()
+        if (param == RouteDifficultType.HARD) {
+            return when (visitTimeMinutes) {
+                in 0..15 -> navigateProperties.priority.coefficient
+                in 16..29 -> navigateProperties.priority.coefficient / 2
+                in 30..60 -> -(navigateProperties.priority.coefficient)
+                else -> -navigateProperties.priority.coefficient * 2
+            }
         }
-
-        if (location.placement == param) {
-            return navigateProperties.priority.coefficient
+        if (param == RouteDifficultType.MEDIUM) {
+            return when (visitTimeMinutes) {
+                in 0..15 -> navigateProperties.priority.coefficient / 2
+                in 16..29 -> navigateProperties.priority.coefficient
+                in 30..60 -> navigateProperties.priority.coefficient / 2
+                else -> -navigateProperties.priority.coefficient * 2
+            }
+        }
+        if (param == RouteDifficultType.EASY) {
+            return when (visitTimeMinutes) {
+                in 0..29 -> -(navigateProperties.priority.coefficient)
+                in 30..59 -> navigateProperties.priority.coefficient / 2
+                in 60..120 -> navigateProperties.priority.coefficient
+                else -> -navigateProperties.priority.coefficient * 2
+            }
         }
 
         return 0
@@ -108,19 +106,21 @@ class PriorityService(
             }
         }
 
-        return 0
+        return -navigateProperties.priority.coefficient
     }
 
     fun getPriorityByLoadFactor(
         location: Location,
         dateTime: LocalDateTime
     ): Int {
-        if (location.coordinates == null) {
-            return 0
+        val loadFactorProc =
+            location.coordinates.loadFactor[dateTime.dayOfWeek]?.get(dateTime.toLocalTime())?.toInt() ?: 0
+        return when (loadFactorProc * 100) {
+            in 0..30 -> navigateProperties.priority.coefficient
+            in 31..60 -> navigateProperties.priority.coefficient / 2
+            in 61..100 -> -navigateProperties.priority.coefficient * 2 // понижаем приоритет у загруженного места
+            else -> 0
         }
-
-        return location.coordinates.loadFactor[dateTime.dayOfWeek]?.get(dateTime.toLocalTime())?.toInt()
-            ?: return 0
     }
 
 }
