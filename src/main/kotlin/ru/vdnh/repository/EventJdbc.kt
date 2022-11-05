@@ -1,7 +1,9 @@
 package ru.vdnh.repository
 
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
+import ru.vdnh.exception.EntityNotFoundException
 import ru.vdnh.model.entity.EventEntity
 import ru.vdnh.repository.mapper.EventRowMapper
 
@@ -12,9 +14,13 @@ class EventJdbc(
 ) : EventRepository {
 
     override fun findEvent(id: Long): EventEntity {
-        return jdbcTemplate.queryForObject(
-            "$SQL_SELECT_ENTITY WHERE e.id = ?", eventRowMapper, id
-        )!!
+        try {
+            return jdbcTemplate.queryForObject(
+                "$SQL_SELECT_ENTITY WHERE e.id = ?", eventRowMapper, id
+            )!!
+        } catch (ex: EmptyResultDataAccessException) {
+            throw EntityNotFoundException("No event with id = $id")
+        }
     }
 
     override fun getAllEvents(): List<EventEntity> {
