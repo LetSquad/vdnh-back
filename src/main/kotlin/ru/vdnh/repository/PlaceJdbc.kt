@@ -1,7 +1,9 @@
 package ru.vdnh.repository
 
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
+import ru.vdnh.exception.EntityNotFoundException
 import ru.vdnh.model.entity.PlaceEntity
 import ru.vdnh.repository.mapper.PlaceRowMapper
 
@@ -18,10 +20,14 @@ class PlaceJdbc(
     }
 
     override fun getPlaceById(id: Long): PlaceEntity {
-        return jdbcTemplate.queryForObject(
-            "$SQL_SELECT_ENTITY WHERE p.id = ?", placeRowMapper,
-            id
-        )!!
+        try {
+            return jdbcTemplate.queryForObject(
+                "$SQL_SELECT_ENTITY WHERE p.id = ?", placeRowMapper,
+                id
+            )!!
+        } catch (ex: EmptyResultDataAccessException) {
+            throw EntityNotFoundException("No place with id = $id")
+        }
     }
 
     override fun getEventsByPlaceId(placeId: Long): List<Long> {
