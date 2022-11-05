@@ -10,9 +10,10 @@ data class Location(
     val coordinates: Coordinates,
     val locationCodeType: CategoryType,
 
-    val schedule: Schedule?, // TODO сделать фильтрацию на основе расписания
+    val schedule: Schedule?,
     val visitTime: Duration?,
     val placement: LocationPlacement?,
     val paymentConditions: PaymentConditions?,
     val priority: Int?,
+    val food: Boolean,
 )
