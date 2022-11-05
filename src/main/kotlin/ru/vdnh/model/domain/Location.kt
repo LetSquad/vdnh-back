@@ -15,5 +15,6 @@ data class Location(
     val placement: LocationPlacement?,
     val paymentConditions: PaymentConditions?,
     val priority: Int?,
-    val food: Boolean,
+    val subjectCode: String?,
+    val typeCode: String?,
 )

@@ -38,16 +38,26 @@ class RouteService(
         val mergeSortedLocations: List<Location> = routeNavigateService.mergeLocationsByTagsIntoOneList(locations)
 
         // формируем варианты маршрутов
-        val locationVariants: List<List<Location>> = routeNavigateService.makeLocationRouteVariants(mergeSortedLocations)
+        val locationVariants: List<List<Location>> =
+            routeNavigateService.makeLocationRouteVariants(mergeSortedLocations)
 
         // определяем итоговые маршруты
-        val resultRoutes: List<RouteDTO> = locationVariants
-            .map { routeNavigateService.takeLocationsByVisitDuration(it, dto) }
-            .map { routeNavigateService.makeRouteSort(it, dto.startPlaceId, dto.finishPlaceId) }
-            .filter { it.size >= 2 }
+        val resultLocationVariants: List<List<Location>> =
+            routeNavigateService.takeLocationsByVisitDuration(locationVariants, dto)
+        var resultLocations: List<List<Location>> =
+            resultLocationVariants.map { routeNavigateService.makeRouteSort(it, dto.startPlaceId, dto.finishPlaceId) }
+
+        // добавляем локации с едой если необходимо
+        if (dto.food == true) {
+            resultLocations = resultLocations
+                .map { routeNavigateService.addFoodLocationsToRoutes(it) }
+        }
+
+        // добавляем точки построения пути маршрута от mapbox
+        val resultLocationRoutes: List<RouteDTO> = resultLocations
             .map { mapboxService.makeRoute(it, dto.movement ?: MovementRouteType.WALKING) }
 
-        return MapRouteDataDTO(resultRoutes)
+        return MapRouteDataDTO(resultLocationRoutes)
     }
 
 }
