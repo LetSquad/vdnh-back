@@ -14,7 +14,11 @@ data class LocationPropertiesDTO(
     val type: Map<String, String?>,
     val icon: String,
     val url: String,
+    val ticketsUrl: String?,
     val pic: String?,
+    val scheduleClosingTime: String?,
+    val scheduleDayOff: Boolean?,
+    val scheduleAdditionalInfo: List<String>?,
     val places: List<Long>?,
     val events: List<Long>?
 )

@@ -1,7 +1,9 @@
 package ru.vdnh.repository
 
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
+import ru.vdnh.exception.EntityNotFoundException
 import ru.vdnh.model.entity.RouteEntity
 import ru.vdnh.repository.mapper.RouteRowMapper
 
@@ -12,10 +14,14 @@ class RouteJdbc(
 ) : RouteRepository {
 
     override fun getRouteById(id: Long): RouteEntity {
-        return jdbcTemplate.queryForObject(
-            "$SQL_SELECT_ENTITY WHERE id = ?", routeRowMapper,
-            id
-        )!!
+        return try {
+            jdbcTemplate.queryForObject(
+                "$SQL_SELECT_ENTITY WHERE id = ?", routeRowMapper,
+                id
+            )!!
+        }  catch (ex: EmptyResultDataAccessException) {
+            throw EntityNotFoundException("There is no route with id = $id")
+        }
     }
 
     companion object {

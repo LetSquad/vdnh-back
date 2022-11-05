@@ -26,7 +26,7 @@ class PlaceJdbc(
                 id
             )!!
         } catch (ex: EmptyResultDataAccessException) {
-            throw EntityNotFoundException("No place with id = $id")
+            throw EntityNotFoundException("There is no place with id = $id")
         }
     }
 

@@ -3,34 +3,50 @@ package ru.vdnh.mapper
 import org.springframework.stereotype.Component
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.Place
+import ru.vdnh.model.domain.WorkingHours
 import ru.vdnh.model.dto.LocationPropertiesDTO
 import ru.vdnh.model.enums.CategoryType
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class LocationPropertiesMapper {
 
-    fun domainToDto(place: Place): LocationPropertiesDTO = LocationPropertiesDTO(
-        category = CategoryType.PLACE,
-        isVisible = true,
-        zoom = calculateZoom(place.priority),
-        title = mapOf(KEY_TITLE_RU to place.title, KEY_TITLE_EN to place.titleEn, KEY_TITLE_CN to place.titleCn),
-        shortTitle = mapOf(
-            KEY_SHORT_TITLE_RU to createShortTitle(place.title),
-            KEY_SHORT_TITLE_EN to createShortTitle(place.titleEn),
-            KEY_SHORT_TITLE_CN to createShortTitle(place.titleCn)
-        ),
-        type = mapOf(
-            KEY_TYPE_RU to place.type.name,
-            KEY_TYPE_EN to place.type.nameEn,
-            KEY_TYPE_CN to place.type.nameCn
-        ),
-        icon = place.type.iconCode,
-        color = place.type.iconColor,
-        url = VDNH_BASE_URL + place.url,
-        pic = place.imageUrl?.let { VDNH_BASE_URL + it },
-        events = place.events,
-        places = null
-    )
+    fun domainToDto(place: Place): LocationPropertiesDTO {
+        val workingHours: WorkingHours? = place.schedule?.findTodayWorkingHours()
+        return LocationPropertiesDTO(
+            category = CategoryType.PLACE,
+            isVisible = true,
+            zoom = calculateZoom(place.priority),
+            title = mapOf(KEY_TITLE_RU to place.title, KEY_TITLE_EN to place.titleEn, KEY_TITLE_CN to place.titleCn),
+            shortTitle = mapOf(
+                KEY_SHORT_TITLE_RU to createShortTitle(place.title),
+                KEY_SHORT_TITLE_EN to createShortTitle(place.titleEn),
+                KEY_SHORT_TITLE_CN to createShortTitle(place.titleCn)
+            ),
+            type = mapOf(
+                KEY_TYPE_RU to place.type.name,
+                KEY_TYPE_EN to place.type.nameEn,
+                KEY_TYPE_CN to place.type.nameCn
+            ),
+            icon = place.type.iconCode,
+            color = place.type.iconColor,
+            url = VDNH_BASE_URL + place.url,
+            ticketsUrl = place.ticketsUrl,
+            pic = place.imageUrl?.let { VDNH_BASE_URL + it },
+            scheduleClosingTime = workingHours?.to?.let { closingTime ->
+                if (closingTime == LocalTime.MIDNIGHT.minusSeconds(1)) {
+                    workingHoursFormatter.format(LocalTime.MIDNIGHT)
+                } else {
+                    workingHoursFormatter.format(closingTime)
+                }
+            },
+            scheduleDayOff = workingHours?.isDayOff,
+            scheduleAdditionalInfo = null,
+            events = place.events,
+            places = null
+        )
+    }
 
     fun domainToDto(event: Event): LocationPropertiesDTO = LocationPropertiesDTO(
         category = CategoryType.EVENT,
@@ -50,7 +66,11 @@ class LocationPropertiesMapper {
         icon = event.type.iconCode,
         color = event.type.iconColor,
         url = VDNH_BASE_URL + event.url,
+        ticketsUrl = null,
         pic = event.imageUrl?.let { VDNH_BASE_URL + it },
+        scheduleClosingTime = null,
+        scheduleDayOff = null,
+        scheduleAdditionalInfo = null,
         places = event.places.map { it.id },
         events = null
     )
@@ -87,5 +107,7 @@ class LocationPropertiesMapper {
         private const val MINIMUM_ZOOM = 14
 
         private const val VDNH_BASE_URL = "https://vdnh.ru"
+
+        private val workingHoursFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
 }
