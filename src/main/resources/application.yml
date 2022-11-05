@@ -7,4 +7,16 @@ springdoc:
   swagger-ui:
     path: '/swagger-ui'
 mapbox:
-  accessToken: ''
+  access-token: ''
+app:
+  navigation:
+    route-variants-count: 3
+    location-merge-strategy: 1
+    priority:
+      coefficient: 50
+      start: 500
+      event-start: 100
+    default:
+      visit-time-minutes: 120
+      # центральный вход
+      start-place-id: 334

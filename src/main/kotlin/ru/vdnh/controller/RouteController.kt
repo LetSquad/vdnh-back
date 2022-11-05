@@ -30,7 +30,7 @@ class RouteController(
     }
 
     @Operation(
-        summary = "Построение быстрого маршрута по критериям"
+        summary = "Построение маршрута по критериям"
     )
     @PostMapping("navigate")
     fun getNavigateRoute(@RequestBody dto: RouteNavigationDTO): MapRouteDataDTO {

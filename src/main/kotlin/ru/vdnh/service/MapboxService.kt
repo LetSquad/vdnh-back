@@ -10,7 +10,7 @@ import ru.vdnh.config.MapboxConfigProperties
 import ru.vdnh.exception.MapboxException
 import ru.vdnh.mapper.MapRouteMapper
 import ru.vdnh.model.domain.Location
-import ru.vdnh.model.dto.MapRouteDataDTO
+import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.enums.MovementRouteType
 
 
@@ -23,7 +23,7 @@ class MapboxService(
     fun makeRoute(
         locations: List<Location>,
         movementType: MovementRouteType
-    ): MapRouteDataDTO {
+    ): RouteDTO {
         val points: List<Point> = locations
             .map { Point.fromLngLat(it.coordinates.longitude.toDouble(), it.coordinates.latitude.toDouble()) }
 
@@ -39,7 +39,7 @@ class MapboxService(
                 response.body()?.routes()?.get(0)?.geometry()
             val lineString: LineString = LineString.fromPolyline(geometryStr!!, PRECISION_6)
 
-            return mapRouteMapper.toMapRouteDTO(locations, lineString)
+            return mapRouteMapper.toRouteDTO(locations, lineString)
         }
 
         throw MapboxException("Response from mapbox is not ok: [$response]")
