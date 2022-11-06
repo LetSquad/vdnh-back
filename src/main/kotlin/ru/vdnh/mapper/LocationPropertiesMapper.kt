@@ -79,13 +79,13 @@ class LocationPropertiesMapper {
     )
 
     private fun retrieveTag(subjectCode: String?, typeCode: String?): LocationTag = when {
-        subjectCode == "NATURE" -> LocationTag.NATURE
+        subjectCode == "NATURE" || typeCode == "GREEN_ZONE" || typeCode == "PICNIC" || typeCode == "POND" -> LocationTag.NATURE
         subjectCode == "ART" -> LocationTag.ART
         subjectCode == "ANIMALS" -> LocationTag.ANIMALS
         subjectCode == "ARCHITECTURE" -> LocationTag.ARCHITECTURE
         subjectCode == "MOSCOW" -> LocationTag.MOSCOW
         subjectCode == "TECH" -> LocationTag.TECH
-        subjectCode == "SPORT" -> LocationTag.SPORT
+        subjectCode == "SPORT" || typeCode == "PLAYGROUND" -> LocationTag.SPORT
         subjectCode == "HISTORY" -> LocationTag.HISTORY
         subjectCode == "KIDS" -> LocationTag.KIDS
         typeCode == "FOOD" || typeCode == "VENDING" -> LocationTag.FOOD
