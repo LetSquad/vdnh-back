@@ -19,7 +19,7 @@ class EventJdbc(
                 "$SQL_SELECT_ENTITY WHERE e.id = ?", eventRowMapper, id
             )!!
         } catch (ex: EmptyResultDataAccessException) {
-            throw EntityNotFoundException("No event with id = $id")
+            throw EntityNotFoundException("There is no event with id = $id")
         }
     }
 
