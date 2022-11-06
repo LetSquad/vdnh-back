@@ -6,6 +6,7 @@ import ru.vdnh.model.domain.Place
 import ru.vdnh.model.domain.WorkingHours
 import ru.vdnh.model.dto.LocationPropertiesDTO
 import ru.vdnh.model.enums.CategoryType
+import ru.vdnh.model.enums.LocationTag
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -29,6 +30,7 @@ class LocationPropertiesMapper {
                 KEY_TYPE_EN to place.type.nameEn,
                 KEY_TYPE_CN to place.type.nameCn
             ),
+            tag = retrieveTag(place.subjectCode, place.typeCode),
             icon = place.type.iconCode,
             color = place.type.iconColor,
             url = VDNH_BASE_URL + place.url,
@@ -63,6 +65,7 @@ class LocationPropertiesMapper {
             KEY_TYPE_EN to event.type.nameEn,
             KEY_TYPE_CN to event.type.nameCn
         ),
+        tag = retrieveTag(event.subjectCode, event.typeCode),
         icon = event.type.iconCode,
         color = event.type.iconColor,
         url = VDNH_BASE_URL + event.url,
@@ -74,6 +77,23 @@ class LocationPropertiesMapper {
         places = event.places.map { it.id },
         events = null
     )
+
+    private fun retrieveTag(subjectCode: String?, typeCode: String?): LocationTag = when {
+        subjectCode == "NATURE" -> LocationTag.NATURE
+        subjectCode == "ART" -> LocationTag.ART
+        subjectCode == "ANIMALS" -> LocationTag.ANIMALS
+        subjectCode == "ARCHITECTURE" -> LocationTag.ARCHITECTURE
+        subjectCode == "MOSCOW" -> LocationTag.MOSCOW
+        subjectCode == "TECH" -> LocationTag.TECH
+        subjectCode == "SPORT" -> LocationTag.SPORT
+        subjectCode == "HISTORY" -> LocationTag.HISTORY
+        subjectCode == "KIDS" -> LocationTag.KIDS
+        typeCode == "FOOD" || typeCode == "VENDING" -> LocationTag.FOOD
+        typeCode == "WC" -> LocationTag.WC
+        typeCode == "BUS_STOP" || typeCode == "PARKING" || typeCode == "TAXI" || typeCode == "HIRE" -> LocationTag.TRANSPORT
+        typeCode == "FIRST_AID" -> LocationTag.FIRST_AID
+        else -> LocationTag.UNKNOWN
+    }
 
     private fun calculateZoom(priority: Int): Double {
         val normalizedPriority = if (priority > MAX_PRIORITY) MAX_PRIORITY else priority
