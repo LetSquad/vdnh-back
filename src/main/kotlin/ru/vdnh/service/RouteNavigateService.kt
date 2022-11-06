@@ -192,9 +192,15 @@ class RouteNavigateService(
         }
 
         val resultRouteWithFood = locations.toMutableList()
-        foodLocationToInsert.forEachIndexed { i, foodLocation ->
-            val indexToInsertFood = indexesBeforeFood[i]
-            resultRouteWithFood.add(indexToInsertFood, foodLocation)
+
+        if (indexesBeforeFood.isEmpty()) {
+            val foodLocation: Location = findClosestFoodLocation(locations.last())
+            resultRouteWithFood.add(foodLocation)
+        } else {
+            foodLocationToInsert.forEachIndexed { i, foodLocation ->
+                val indexToInsertFood = indexesBeforeFood[i]
+                resultRouteWithFood.add(indexToInsertFood, foodLocation)
+            }
         }
 
         return resultRouteWithFood
