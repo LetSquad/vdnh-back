@@ -17,6 +17,11 @@ class LocationService(
             .let { locationMapper.placeToLocation(it) }
     }
 
+    fun getByPlaceCoordinateId(placeCoordinateId: Long): Location {
+        return placeService.getPlaceByCoordinateId(placeCoordinateId)
+            .let { locationMapper.placeToLocation(it) }
+    }
+
     fun getByTags(tags: List<String>): List<List<Location>> {
         return if (tags.isEmpty()) listOf(getLocationsBySubject(null)) else tags.map { getLocationsBySubject(it) }
     }
@@ -59,6 +64,11 @@ class LocationService(
         return locations.size
     }
 
+    fun getAllFoodLocations(): List<Location> {
+        return placeService.getPlacesByType(FOOD_TYPE_CODE)
+            .map { locationMapper.placeToLocation(it) }
+    }
+
     companion object {
         private val BLACK_SET_TYPE_CODES = setOf(
             "ENTRANCE",
@@ -80,7 +90,9 @@ class LocationService(
             "HIRE",
 
             "OTHER",
+            "INFOCENTER",
             "ONLINE"
         )
+        private val FOOD_TYPE_CODE = "FOOD"
     }
 }

@@ -20,7 +20,8 @@ class LocationMapper{
         placement = domain.placement,
         paymentConditions = domain.paymentConditions,
         priority = domain.priority,
-        food = isFoodLocation(domain.typeCode)
+        subjectCode = domain.subjectCode,
+        typeCode = domain.typeCode,
     )
 
     fun eventToLocation(domain: Event) = Location(
@@ -32,7 +33,8 @@ class LocationMapper{
         placement = domain.placement,
         paymentConditions = domain.paymentConditions,
         priority = domain.priority,
-        food = isFoodLocation(domain.typeCode)
+        subjectCode = domain.subjectCode,
+        typeCode = domain.typeCode,
     )
 
     fun getCoordinates(domain: Event): Coordinates {
@@ -41,17 +43,6 @@ class LocationMapper{
         }
 
         return domain.places[0].coordinates
-    }
-
-    fun isFoodLocation(typeCode: String?): Boolean {
-        return when (typeCode) {
-            FOOD_TYPE_CODE -> true
-            else -> false
-        }
-    }
-
-    companion object {
-        private const val FOOD_TYPE_CODE = "FOOD"
     }
 
 }

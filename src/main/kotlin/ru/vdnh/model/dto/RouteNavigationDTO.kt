@@ -1,8 +1,8 @@
 package ru.vdnh.model.dto
 
-import ru.vdnh.model.enums.LocationPlacement
 import ru.vdnh.model.enums.MovementRouteType
 import ru.vdnh.model.enums.PaymentRequirements
+import ru.vdnh.model.enums.PlacementRouteType
 import ru.vdnh.model.enums.PopularNavigationType
 import ru.vdnh.model.enums.RouteDifficultType
 import java.time.OffsetDateTime
@@ -18,7 +18,7 @@ data class RouteNavigationDTO(
 
     // criteria
     val peopleNumber: VisitorCountDTO?,
-    val locationPlacement: LocationPlacement?,
+    val locationPlacement: PlacementRouteType?,
     val popularity: PopularNavigationType?,
     val difficulty: RouteDifficultType?,
     val payment: PaymentRequirements?,

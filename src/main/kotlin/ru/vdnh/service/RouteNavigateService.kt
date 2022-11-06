@@ -4,7 +4,6 @@ import org.jgrapht.traverse.ClosestFirstIterator
 import org.springframework.stereotype.Service
 import ru.vdnh.config.RouteNavigateConfigProperties
 import ru.vdnh.model.domain.Location
-import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.domain.Schedule
 import ru.vdnh.model.domain.WorkingHours
 import ru.vdnh.model.dto.RouteNavigationDTO
@@ -15,22 +14,20 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.util.stream.Collectors
 
 
 @Service
 class RouteNavigateService(
     private val priorityService: PriorityService,
     private val locationService: LocationService,
-    private val coordinatesService: CoordinatesService,
     private val graphService: GraphService,
 
     private val navigateProperties: RouteNavigateConfigProperties
 ) {
 
     fun getTags(dto: RouteNavigationDTO): List<String> {
-        if (dto.peopleNumber?.kid != 0) {
-            val resultTags: MutableList<String> = dto.tags?.toMutableList() ?: mutableListOf()
+        if (dto.peopleNumber?.kid != 0 && !dto.tags.isNullOrEmpty()) {
+            val resultTags: MutableList<String> = dto.tags.toMutableList()
             resultTags.add(KIDS_TAG)
 
             return resultTags
@@ -45,15 +42,10 @@ class RouteNavigateService(
     ): List<Location> {
         var locationsTemp = locations.toList()
 
-        if (dto.locationPlacement != null) {
-            locationsTemp = locationsTemp.filter { it.placement == dto.locationPlacement }
-        }
         if (dto.payment == PaymentRequirements.FREE) {
             locationsTemp = locationsTemp.filter { it.paymentConditions == PaymentConditions.FREE }
         }
-        if (dto.food == false) {
-            locationsTemp = locationsTemp.filter { !it.food }
-        }
+
         locationsTemp = locationsTemp.filter { filterByLocationSchedule(it.schedule, dto.dateTimeStart, dto.dateTimeEnd) }
 
         return locationsTemp
@@ -110,7 +102,8 @@ class RouteNavigateService(
         priority -= priorityService.getPriorityByLocationType(location, location.locationCodeType)
         priority -= priorityService.getPriorityByPopular(location, dto.popularity)
         priority -= priorityService.getPriorityByRouteDifficulty(location, dto.difficulty)
-//        priority -= priorityService.getPriorityByVisitorTypeAndNumber(location, dto.peopleNumber) // TODO: add priority by people number and peopleType
+        priority -= priorityService.getPriorityByPlacementType(location, dto.locationPlacement)
+        priority -= priorityService.getPriorityByVisitorTypeAndNumber(location, dto.peopleNumber)
         priority -= priorityService.getPriorityByPaymentRequirements(location, dto.payment)
 
         if (dto.loadFactor == true) {
@@ -149,30 +142,78 @@ class RouteNavigateService(
     }
 
     fun takeLocationsByVisitDuration(
-        locations: List<Location>,
+        locations: List<List<Location>>,
         dto: RouteNavigationDTO
-    ): List<Location> {
+    ): List<List<Location>> {
+        val result = mutableListOf<List<Location>>()
         val localStartTime: LocalDateTime? = dto.dateTimeStart?.atZoneSameInstant(MOSCOW_TIME_ZONE)?.toLocalDateTime()
         val localEndTime: LocalDateTime? = dto.dateTimeEnd?.atZoneSameInstant(MOSCOW_TIME_ZONE)?.toLocalDateTime()
 
-        val visitDurationMinutes = getVisitDurationMinutes(localStartTime, localEndTime)
+        val routeDurationMinutes = getRouteDurationMinutes(localStartTime, localEndTime)
 
-        val locationCount = locationService.getVisitsNumber(locations, visitDurationMinutes)
+        locations.forEach {
+            if (it.size >= navigateProperties.default.minLocationCountInRoute) {
+                var locationCount = locationService.getVisitsNumber(it, routeDurationMinutes)
+                if (locationCount > navigateProperties.default.maxLocationCountInRoute) {
+                    locationCount = navigateProperties.default.maxLocationCountInRoute
+                }
 
-        return locations.take(locationCount)
+                result.add(it.take(locationCount))
+            }
+        }
+
+        return result
     }
 
-    fun getVisitDurationMinutes(
+    fun getRouteDurationMinutes(
         dateStart: LocalDateTime?,
         dateFinish: LocalDateTime?,
     ): Int {
         if (dateFinish == null || dateStart == null) {
-            return navigateProperties.default.visitTimeMinutes
+            return navigateProperties.default.routeTimeMinutes
         }
 
-        return dateFinish.toLocalTime().minute - dateStart.toLocalTime().minute
+        return (dateFinish.toLocalTime().toSecondOfDay() - dateStart.toLocalTime().toSecondOfDay()) / MINUTES_IN_HOUR
     }
 
+    fun addFoodLocationsToRoutes(locations: List<Location>): List<Location> {
+        var minutes = 0
+        val indexesBeforeFood = mutableListOf<Int>()
+        val foodLocationToInsert = mutableListOf<Location>()
+        locations.forEachIndexed { i, location ->
+            if (minutes < navigateProperties.toFoodLocationDurationMinutes) {
+                minutes += location.visitTime?.toMinutes()?.toInt() ?: navigateProperties.default.visitTimeMinutes
+            } else {
+                indexesBeforeFood.add(i + 1)
+                val closestFoodLocation: Location = findClosestFoodLocation(location)
+                foodLocationToInsert.add(closestFoodLocation)
+                minutes = 0
+            }
+        }
+
+        val resultRouteWithFood = locations.toMutableList()
+        foodLocationToInsert.forEachIndexed { i, foodLocation ->
+            val indexToInsertFood = indexesBeforeFood[i]
+            resultRouteWithFood.add(indexToInsertFood, foodLocation)
+        }
+
+        return resultRouteWithFood
+    }
+
+    fun findClosestFoodLocation(location: Location): Location {
+        val routeNodeToInsertFood = graphService.makeRouteNodeFromLocation(location)
+        val routeNodesFood = locationService.getAllFoodLocations()
+            .map { graphService.makeRouteNodeFromLocation(it) }
+            .toMutableList()
+        routeNodesFood.add(routeNodeToInsertFood)
+
+        val foodGraph = graphService.createGraphFromRouteNodes(routeNodesFood)
+        val graphIterator = ClosestFirstIterator(foodGraph, routeNodeToInsertFood).iterator()
+        graphIterator.next() // пропускаем первый элемент - это всегда точка старта
+        return graphIterator.next().let { locationService.getByPlaceCoordinateId(it.coordinatesId) }
+    }
+
+    // TODO подбирать точку выхода с маршрута по дефолту ближайшую к любой точке входа/выхода
     fun makeRouteSort(
         locations: List<Location>,
         startLocationId: Long?,
@@ -181,26 +222,15 @@ class RouteNavigateService(
         // определяем точку входа маршрута (по умолчанию - главный вход (центральный павильон))
         val locationStart: Location =
             locationService.getByPlaceId(startLocationId ?: navigateProperties.default.startPlaceId)
-        val nodeStart: RouteNode =
-            coordinatesService.getRouteNodeByCoordinateId(locationStart.coordinates.id)
-
-        // определяем точку выхода маршрута
-        // TODO подбирать точку выхода с маршрута по дефолту ближайшую к любой точке входа/выхода
-//        val locationFinish: Location =
-//            locationService.getByPlaceId(placeNavigation?.startPlaceId ?: DEFAULT_FINISH_PLACE_ID)
-//        val nodeFinish: RouteNode =
-//            coordinatesService.getRouteNodeByCoordinateId(locationFinish.coordinates.id)
-
-        // создаем граф на основе точек маршрута
-        val routeNodes = locations.stream()
-            .map { coordinatesService.getRouteNodeByCoordinateId(it.coordinates.id) }
-            .collect(Collectors.toList())
-
-        routeNodes.add(nodeStart)
         val locationsWithStart: MutableList<Location> = locations.toMutableList()
         locationsWithStart.add(locationStart)
 
-        val graph = graphService.createGraphFromRouteNodes(routeNodes)
+        // создаем граф на основе точек маршрута
+        val nodeStart = graphService.makeRouteNodeFromLocation(locationStart)
+        val nodes = graphService.makeRouteNodesFormLocations(locations)
+        nodes.add(nodeStart)
+
+        val graph = graphService.createGraphFromRouteNodes(nodes)
 
         // определяем кратчайший путь между точками маршрута
         val sortedLocations: MutableList<Location> = mutableListOf()
@@ -209,7 +239,6 @@ class RouteNavigateService(
 
         return sortedLocations
     }
-
 
     // val numbers = listOf(listOf(1, 2, 3), listOf(4, 5), listOf(6))
     // numbers.roundRobin(1) // [1, 4, 6, 2, 5, 3]
@@ -225,5 +254,6 @@ class RouteNavigateService(
         private val KIDS_TAG = "KIDS"
 
         private val MOSCOW_TIME_ZONE = ZoneId.of("UTC+3")
+        private val MINUTES_IN_HOUR = 60
     }
 }

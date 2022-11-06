@@ -2,27 +2,29 @@ package ru.vdnh.service
 
 import org.jgrapht.graph.DefaultUndirectedWeightedGraph
 import org.jgrapht.graph.DefaultWeightedEdge
-import org.jgrapht.traverse.ClosestFirstIterator
 import org.springframework.stereotype.Service
 import ru.vdnh.getLogger
+import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.RouteNode
+import java.util.stream.Collectors
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
 
 
 @Service
-class GraphService {
+class GraphService(
+    private val coordinatesService: CoordinatesService,
+) {
 
-    fun getClosestRoute(
-        graph: DefaultUndirectedWeightedGraph<RouteNode, DefaultWeightedEdge>,
-        nodeStart: RouteNode
-    ): List<RouteNode> {
-        val route: MutableList<RouteNode> = mutableListOf()
-        ClosestFirstIterator(graph, nodeStart)
-            .forEach { route.add(it) }
+    fun makeRouteNodeFromLocation(location: Location): RouteNode = coordinatesService.getRouteNodeByCoordinateId(location.coordinates.id)
 
-        return route
+    fun makeRouteNodesFormLocations(
+        locations: List<Location>,
+    ): MutableList<RouteNode> {
+        return locations.stream()
+            .map { coordinatesService.getRouteNodeByCoordinateId(it.coordinates.id) }
+            .collect(Collectors.toList())
     }
 
     fun createGraphFromRouteNodes(routeNodes: List<RouteNode>): DefaultUndirectedWeightedGraph<RouteNode, DefaultWeightedEdge> {

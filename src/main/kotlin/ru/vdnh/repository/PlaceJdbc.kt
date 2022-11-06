@@ -19,6 +19,13 @@ class PlaceJdbc(
         )
     }
 
+    override fun getPlacesByType(typeCode: String): List<PlaceEntity>{
+        return jdbcTemplate.query(
+            "$SQL_SELECT_ENTITY WHERE p.is_active = true AND p.type_code = ?", placeRowMapper,
+            typeCode
+        )
+    }
+
     override fun getPlaceById(id: Long): PlaceEntity {
         try {
             return jdbcTemplate.queryForObject(
@@ -27,6 +34,17 @@ class PlaceJdbc(
             )!!
         } catch (ex: EmptyResultDataAccessException) {
             throw EntityNotFoundException("There is no place with id = $id")
+        }
+    }
+
+    override fun getPlaceByCoordinateId(coordinateId: Long): PlaceEntity {
+        try {
+            return jdbcTemplate.queryForObject(
+                "$SQL_SELECT_ENTITY WHERE p.coordinates_id = ?", placeRowMapper,
+                coordinateId
+            )!!
+        } catch (ex: EmptyResultDataAccessException) {
+            throw EntityNotFoundException("There is no place with coordinate_id = $coordinateId")
         }
     }
 

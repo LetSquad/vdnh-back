@@ -23,6 +23,16 @@ class PlaceService(
         return placeDomainList
     }
 
+    fun getPlacesByType(typeCode: String): List<Place> {
+        val placeEntities: List<PlaceEntity> = placeRepository.getPlacesByType(typeCode)
+        val placeDomainList = mutableListOf<Place>()
+        for (place in placeEntities) {
+            val eventsByPlaceId: List<Long> = placeRepository.getEventsByPlaceId(place.id)
+            placeDomainList.add(placeMapper.entityToDomain(place, eventsByPlaceId))
+        }
+        return placeDomainList
+    }
+
     fun getPlaceDTOById(id: Long): PlaceDTO {
         val place = placeRepository.getPlaceById(id)
         val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
@@ -33,6 +43,13 @@ class PlaceService(
 
     fun getPlaceById(id: Long): Place {
         val place = placeRepository.getPlaceById(id)
+        val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
+        return place
+            .let { placeMapper.entityToDomain(it, eventsByPlaceId) }
+    }
+
+    fun getPlaceByCoordinateId(coordinateId: Long): Place {
+        val place = placeRepository.getPlaceByCoordinateId(coordinateId)
         val eventsByPlaceId = placeRepository.getEventsByPlaceId(place.id)
         return place
             .let { placeMapper.entityToDomain(it, eventsByPlaceId) }

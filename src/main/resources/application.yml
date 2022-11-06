@@ -10,13 +10,30 @@ mapbox:
   access-token: ''
 app:
   navigation:
+    # количество минут до вставки локации с едой по маршруту
+    to-food-location-duration-minutes: 120
+    # количество предлагаемых вариантов маршрута
     route-variants-count: 3
+    # соотношение при мерже маршрутов по тематикам
+    #   routeTag_1 = [1, 2, 3], routeTag_2 = [4, 5, 6], routeTag_3 = [7, 8, 9]
+    #   mergeParam = 1, resultRoute = [1, 4, 7, 2, 5, 8, 3, 6, 9]
+    #   mergeParam = 2, resultRoute = [1, 2, 4, 5, 7, 8, 3, 6, 9]
     location-merge-strategy: 1
     priority:
-      coefficient: 50
+      # изменение приоритета при совпадении/не совпадению по критерию
+      coefficient: 100
+      # начальный дефолтный приоритет локации (если не задан)
       start: 500
-      event-start: 100
+      # изначальное добавление приоритета по событию
+      event-start: 50
     default:
-      visit-time-minutes: 120
-      # центральный вход
+      # дефолтное время посещения локации
+      visit-time-minutes: 15
+      # дефолтное время маршрута
+      route-time-minutes: 180
+      # id центрального входа
       start-place-id: 334
+      # максимальное количество локаций в маршруте (ограничение mapbox)
+      max-location-count-in-route: 25
+      # минимальное количество локаций в маршруте
+      min-location-count-in-route: 2

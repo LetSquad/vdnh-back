@@ -8,6 +8,8 @@ interface PlaceRepository {
 
     fun getPlaceById(id: Long): PlaceEntity
 
+    fun getPlaceByCoordinateId(coordinateId: Long): PlaceEntity
+
     fun getEventsByPlaceId(placeId: Long): List<Long>
 
     fun getAllActiveWhereSubject(subjectCode: String): List<PlaceEntity>
@@ -15,4 +17,6 @@ interface PlaceRepository {
     fun getByCoordinatesId(coordinatesId: Long): PlaceEntity
 
     fun getPlacesByRouteId(id: Long): List<PlaceEntity>
+
+    fun getPlacesByType(typeCode: String): List<PlaceEntity>
 }
