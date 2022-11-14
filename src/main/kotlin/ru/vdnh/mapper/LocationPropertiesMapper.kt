@@ -92,6 +92,7 @@ class LocationPropertiesMapper {
         typeCode == "WC" -> LocationTag.WC
         typeCode == "BUS_STOP" || typeCode == "PARKING" || typeCode == "TAXI" || typeCode == "HIRE" -> LocationTag.TRANSPORT
         typeCode == "FIRST_AID" -> LocationTag.FIRST_AID
+        typeCode == "ENTRANCE" || typeCode == "ENTRY" -> LocationTag.ENTRANCE
         else -> LocationTag.UNKNOWN
     }
 

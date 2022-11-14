@@ -14,5 +14,6 @@ enum class LocationTag {
     WC,
     TRANSPORT,
     FIRST_AID,
+    ENTRANCE,
     UNKNOWN
 }
