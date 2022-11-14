@@ -10,6 +10,7 @@ import ru.vdnh.config.MapboxConfigProperties
 import ru.vdnh.exception.MapboxException
 import ru.vdnh.mapper.MapRouteMapper
 import ru.vdnh.model.domain.Location
+import ru.vdnh.model.dto.MapPointTimeInfoDTO
 import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.enums.MovementRouteType
 
@@ -36,11 +37,15 @@ class MapboxService(
                 .executeCall()
 
             if (response.isSuccessful) {
-                val geometryStr: String? =
-                    response.body()?.routes()?.get(0)?.geometry()
+                val route = response.body()?.routes()?.get(0)!!
+
+                val geometryStr: String? = route.geometry()
+                val commonDistance: Double = route.distance()
+                val commonDuration: Double = route.duration()
+                val mapInfo: List<MapPointTimeInfoDTO> = route.legs()?.map { MapPointTimeInfoDTO(it.distance(), it.duration()) }!!
                 val lineString: LineString = LineString.fromPolyline(geometryStr!!, PRECISION_6)
 
-                return mapRouteMapper.toRouteDTO(locations, lineString)
+                return mapRouteMapper.toRouteDTO(locations, lineString, mapInfo, commonDistance, commonDuration)
             }
 
             throw MapboxException("Response from mapbox is not ok: [$response]")

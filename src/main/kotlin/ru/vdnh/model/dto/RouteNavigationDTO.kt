@@ -13,8 +13,8 @@ data class RouteNavigationDTO(
     val dateTimeEnd: OffsetDateTime?,
 
     // navigation
-    val startPlaceId: Long?,
-    val finishPlaceId: Long?, // TODO
+    val entrance: Long?,
+    val exit: Long?, // TODO
 
     // criteria
     val peopleNumber: VisitorCountDTO?,

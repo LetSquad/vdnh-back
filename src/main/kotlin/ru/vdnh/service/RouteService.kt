@@ -45,7 +45,7 @@ class RouteService(
         val resultLocationVariants: List<List<Location>> =
             routeNavigateService.takeLocationsByVisitDuration(locationVariants, dto)
         var resultLocations: List<List<Location>> =
-            resultLocationVariants.map { routeNavigateService.makeRouteSort(it, dto.startPlaceId, dto.finishPlaceId) }
+            resultLocationVariants.map { routeNavigateService.makeRouteSort(it, dto.entrance, dto.exit) }
 
         // добавляем локации с едой если необходимо
         if (dto.food == true) {
