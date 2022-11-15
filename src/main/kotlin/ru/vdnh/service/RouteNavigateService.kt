@@ -219,7 +219,6 @@ class RouteNavigateService(
         return graphIterator.next().let { locationService.getByPlaceCoordinateId(it.coordinatesId) }
     }
 
-    // TODO подбирать точку выхода с маршрута по дефолту ближайшую к любой точке входа/выхода
     fun makeRouteSort(
         locations: List<Location>,
         startLocationId: Long?,
@@ -242,6 +241,12 @@ class RouteNavigateService(
         val sortedLocations: MutableList<Location> = mutableListOf()
         ClosestFirstIterator(graph, nodeStart)
             .forEach { sortedLocations.add(locationsWithStart.find { location -> location.coordinates.id == it.coordinatesId }!!) }
+
+        // добавляем точку выхода с маршрута (если есть)
+        if (finishLocationId != null) {
+            val locationFinish: Location = locationService.getByPlaceId(finishLocationId)
+            sortedLocations.add(locationFinish)
+        }
 
         return sortedLocations
     }
