@@ -25,6 +25,7 @@ class RouteJdbc(
     }
 
     companion object {
-        const val SQL_SELECT_ENTITY = "SELECT id, name, description, distance_meters, duration_minutes FROM route"
+        const val SQL_SELECT_ENTITY =
+            "SELECT id, name, description, image_url, preview_image_url FROM route"
     }
 }

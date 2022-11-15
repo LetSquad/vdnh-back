@@ -2,8 +2,10 @@ package ru.vdnh.service
 
 import org.springframework.stereotype.Service
 import ru.vdnh.mapper.LocationMapper
+import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.dto.MapRouteDataDTO
+import ru.vdnh.model.dto.PreparedRouteDataDTO
 import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.dto.RouteNavigationDTO
 import ru.vdnh.model.enums.MovementRouteType
@@ -18,14 +20,19 @@ class RouteService(
 
     private val routeRepository: RouteRepository,
     private val locationMapper: LocationMapper,
+    private val routeMapper: RouteMapper,
 ) {
 
-    fun getPreparedRoute(id: Long): MapRouteDataDTO {
+    fun getPreparedRoute(id: Long): PreparedRouteDataDTO {
         val routeEntity = routeRepository.getRouteById(id)
         val locations = placeService.getPlacesByRouteId(routeEntity.id)
             .map { locationMapper.placeToLocation(it) }
 
-        return MapRouteDataDTO(listOf(mapboxService.makeRoute(locations, MovementRouteType.WALKING)))
+        val routeDTO = mapboxService.makeRoute(locations, MovementRouteType.WALKING)
+
+        return routeEntity
+            .let { routeMapper.entityToPreparedRouteDomain(it) }
+            .let { routeMapper.domainToPreparedDTO(it, routeDTO) }
     }
 
     fun getNavigateRoute(dto: RouteNavigationDTO): MapRouteDataDTO {

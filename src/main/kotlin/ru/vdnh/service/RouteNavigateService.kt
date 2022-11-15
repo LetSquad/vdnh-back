@@ -2,7 +2,7 @@ package ru.vdnh.service
 
 import org.jgrapht.traverse.ClosestFirstIterator
 import org.springframework.stereotype.Service
-import ru.vdnh.config.RouteNavigateConfigProperties
+import ru.vdnh.config.properties.RouteNavigateConfigProperties
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.Schedule
 import ru.vdnh.model.domain.WorkingHours
