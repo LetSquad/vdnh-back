@@ -19,6 +19,8 @@ app:
     #   mergeParam = 1, resultRoute = [1, 4, 7, 2, 5, 8, 3, 6, 9]
     #   mergeParam = 2, resultRoute = [1, 2, 4, 5, 7, 8, 3, 6, 9]
     location-merge-strategy: 1
+    #  приблизительный процент от общего времени маршрута который закладывается на время в пути
+    time-to-route-percent: 0.35
     priority:
       # изменение приоритета при совпадении/не совпадению по критерию
       coefficient: 100

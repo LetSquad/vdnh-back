@@ -9,6 +9,7 @@ data class RouteNavigateConfigProperties(
     val routeVariantsCount: Int,
     val toFoodLocationDurationMinutes: Int,
     val locationMergeStrategy: Int,
+    val timeToRoutePercent: Double,
     val priority: PriorityConfigProperties,
     val default: DefaultConfigProperties,
 )

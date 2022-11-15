@@ -173,7 +173,9 @@ class RouteNavigateService(
             return navigateProperties.default.routeTimeMinutes
         }
 
-        return (dateFinish.toLocalTime().toSecondOfDay() - dateStart.toLocalTime().toSecondOfDay()) / MINUTES_IN_HOUR
+        val visitTimeMinutes = (dateFinish.toLocalTime().toSecondOfDay() - dateStart.toLocalTime().toSecondOfDay()) / MINUTES_IN_HOUR
+
+        return (visitTimeMinutes - visitTimeMinutes * navigateProperties.timeToRoutePercent).toInt()
     }
 
     fun addFoodLocationsToRoutes(locations: List<Location>): List<Location> {

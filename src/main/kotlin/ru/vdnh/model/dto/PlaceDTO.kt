@@ -7,5 +7,6 @@ data class PlaceDTO(
     val id: Long,
     val type: String,
     val geometry: GeometryDTO,
-    val properties: LocationPropertiesDTO
+    val properties: LocationPropertiesDTO,
+    val visitTime: Long?
 )
