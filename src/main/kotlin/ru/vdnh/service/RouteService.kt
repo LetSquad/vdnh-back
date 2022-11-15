@@ -6,6 +6,7 @@ import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.dto.PreparedRouteDataDTO
+import ru.vdnh.model.dto.PreparedRouteNavigationDTO
 import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.dto.RouteNavigationDTO
 import ru.vdnh.model.enums.MovementRouteType
@@ -20,14 +21,29 @@ class RouteService(
 
     private val routeRepository: RouteRepository,
     private val locationMapper: LocationMapper,
-    private val routeMapper: RouteMapper,
+    private val routeMapper: RouteMapper
 ) {
 
-    fun getPreparedRoute(id: Long): PreparedRouteDataDTO {
-        val routeEntity = routeRepository.getRouteById(id)
+    fun getPreparedRoute(dto: PreparedRouteNavigationDTO): PreparedRouteDataDTO {
+        // получаем список готового маршрута
+        val routeEntity = routeRepository.getRouteById(dto.id)
         val locations = placeService.getPlacesByRouteId(routeEntity.id)
             .map { locationMapper.placeToLocation(it) }
+            .toMutableList()
 
+        // добавляем точку входа на маршрут (если есть)
+        if (dto.entrance != null) {
+            val locationFinish: Location = locationService.getByPlaceId(dto.entrance)
+            locations.add(0, locationFinish)
+        }
+
+        // добавляем точку выхода с маршрута (если есть)
+        if (dto.exit != null) {
+            val locationFinish: Location = locationService.getByPlaceId(dto.exit)
+            locations.add(locationFinish)
+        }
+
+        // добавляем точки построения пути маршрута от mapbox
         val routeDTO = mapboxService.makeRoute(locations, MovementRouteType.WALKING)
 
         return routeEntity

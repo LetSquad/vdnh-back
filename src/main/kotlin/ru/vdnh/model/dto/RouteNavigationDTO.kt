@@ -14,7 +14,7 @@ data class RouteNavigationDTO(
 
     // navigation
     val entrance: Long?,
-    val exit: Long?, // TODO
+    val exit: Long?,
 
     // criteria
     val peopleNumber: VisitorCountDTO?,
