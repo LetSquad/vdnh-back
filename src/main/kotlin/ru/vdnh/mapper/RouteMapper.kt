@@ -3,6 +3,7 @@ package ru.vdnh.mapper
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Component
+import ru.vdnh.config.properties.VdnhConfigProperties
 import ru.vdnh.model.domain.PreparedRoute
 import ru.vdnh.model.domain.RouteNode
 import ru.vdnh.model.dto.PreparedRouteDataDTO
@@ -11,7 +12,7 @@ import ru.vdnh.model.entity.CoordinatesEntity
 import ru.vdnh.model.entity.RouteEntity
 
 @Component
-class RouteMapper(private val mapper: ObjectMapper) {
+class RouteMapper(private val mapper: ObjectMapper, private val vdnhConfigProperties: VdnhConfigProperties) {
 
     fun coordinatesEntityToNodeDomain(coordinates: CoordinatesEntity): RouteNode {
         return RouteNode(
@@ -25,8 +26,8 @@ class RouteMapper(private val mapper: ObjectMapper) {
     fun entityToPreparedRouteDomain(routeEntity: RouteEntity): PreparedRoute = PreparedRoute(
         name = routeEntity.name,
         description = routeEntity.description,
-        imageUrl = VDNH_BASE_URL + routeEntity.imageUrl,
-        previewImageUrl = VDNH_BASE_URL + routeEntity.previewImageUrl
+        imageUrl = vdnhConfigProperties.baseUrl + routeEntity.imageUrl,
+        previewImageUrl = vdnhConfigProperties.baseUrl + routeEntity.previewImageUrl
     )
 
     fun domainToPreparedDTO(preparedRoute: PreparedRoute, routeDto: RouteDTO): PreparedRouteDataDTO =
@@ -37,9 +38,4 @@ class RouteMapper(private val mapper: ObjectMapper) {
             previewImageUrl = preparedRoute.previewImageUrl,
             mapData = routeDto
         )
-
-    companion object {
-        private const val VDNH_BASE_URL = "https://vdnh.ru"
-    }
-
 }

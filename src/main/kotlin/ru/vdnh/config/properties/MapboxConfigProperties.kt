@@ -1,8 +1,7 @@
-package ru.vdnh.config
+package ru.vdnh.config.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
-import org.springframework.context.annotation.Configuration
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "mapbox")

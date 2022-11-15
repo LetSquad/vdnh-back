@@ -37,3 +37,6 @@ app:
       max-location-count-in-route: 25
       # минимальное количество локаций в маршруте
       min-location-count-in-route: 2
+
+vdnh:
+  base-url: 'https://vdnh.ru'

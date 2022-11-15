@@ -1,7 +1,7 @@
 package ru.vdnh.service
 
 import org.springframework.stereotype.Service
-import ru.vdnh.config.RouteNavigateConfigProperties
+import ru.vdnh.config.properties.RouteNavigateConfigProperties
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.dto.VisitorCountDTO
 import ru.vdnh.model.enums.CategoryType

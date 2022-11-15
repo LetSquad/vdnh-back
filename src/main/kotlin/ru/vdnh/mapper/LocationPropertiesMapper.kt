@@ -1,6 +1,7 @@
 package ru.vdnh.mapper
 
 import org.springframework.stereotype.Component
+import ru.vdnh.config.properties.VdnhConfigProperties
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.Place
 import ru.vdnh.model.domain.WorkingHours
@@ -11,7 +12,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Component
-class LocationPropertiesMapper {
+class LocationPropertiesMapper(private val vdnhConfigProperties: VdnhConfigProperties) {
 
     fun domainToDto(place: Place): LocationPropertiesDTO {
         val workingHours: WorkingHours? = place.schedule?.findTodayWorkingHours()
@@ -33,9 +34,9 @@ class LocationPropertiesMapper {
             tag = retrieveTag(place.subjectCode, place.typeCode),
             icon = place.type.iconCode,
             color = place.type.iconColor,
-            url = VDNH_BASE_URL + place.url,
+            url = vdnhConfigProperties.baseUrl + place.url,
             ticketsUrl = place.ticketsUrl,
-            pic = place.imageUrl?.let { VDNH_BASE_URL + it },
+            pic = place.imageUrl?.let { vdnhConfigProperties.baseUrl + it },
             scheduleClosingTime = workingHours?.to?.let { closingTime ->
                 if (closingTime == LocalTime.MIDNIGHT.minusSeconds(1)) {
                     workingHoursFormatter.format(LocalTime.MIDNIGHT)
@@ -68,9 +69,9 @@ class LocationPropertiesMapper {
         tag = retrieveTag(event.subjectCode, event.typeCode),
         icon = event.type.iconCode,
         color = event.type.iconColor,
-        url = VDNH_BASE_URL + event.url,
+        url = vdnhConfigProperties.baseUrl + event.url,
         ticketsUrl = null,
-        pic = event.imageUrl?.let { VDNH_BASE_URL + it },
+        pic = event.imageUrl?.let { vdnhConfigProperties.baseUrl + it },
         scheduleClosingTime = null,
         scheduleDayOff = null,
         scheduleAdditionalInfo = null,
@@ -126,8 +127,6 @@ class LocationPropertiesMapper {
         private const val MAX_PRIORITY = 200
         private const val PRIORITY_COEF = 6
         private const val MINIMUM_ZOOM = 14
-
-        private const val VDNH_BASE_URL = "https://vdnh.ru"
 
         private val workingHoursFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
