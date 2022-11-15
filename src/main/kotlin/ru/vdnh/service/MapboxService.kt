@@ -40,7 +40,7 @@ class MapboxService(
                 .executeCall()
 
             if (response.isSuccessful) {
-                val route = response.body()?.routes()?.get(0)!!
+                val route = response.body()!!.routes()[0]
 
                 val geometryStr: String? = route.geometry()
                 val lineString: LineString = LineString.fromPolyline(geometryStr!!, PRECISION_6)
@@ -53,7 +53,7 @@ class MapboxService(
                 val commonDuration = commonRouteDuration + commonLocationsDuration
 
                 val mapInfo: List<MapPointTimeInfoDTO> =
-                    route.legs()?.map { MapPointTimeInfoDTO(it.distance(), it.duration()) }!!
+                    route.legs()!!.map { MapPointTimeInfoDTO(it.distance(), it.duration()) }
 
                 return mapRouteMapper.toRouteDTO(locations, lineString, mapInfo, commonDistance, commonDuration)
             }
