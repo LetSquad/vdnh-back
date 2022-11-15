@@ -4,6 +4,6 @@ data class RouteEntity(
     val id: Long,
     val name: String,
     val description: String,
-    val distanceMeters: Int,
-    val durationMinutes: Int
+    val imageUrl: String,
+    val previewImageUrl: String
 )

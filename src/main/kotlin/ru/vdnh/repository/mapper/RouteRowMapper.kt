@@ -12,7 +12,7 @@ class RouteRowMapper : RowMapper<RouteEntity> {
         id = rs.getLong("id"),
         name = rs.getString("name"),
         description = rs.getString("description"),
-        distanceMeters = rs.getInt("distance_meters"),
-        durationMinutes = rs.getInt("duration_minutes")
+        imageUrl = rs.getString("image_url"),
+        previewImageUrl = rs.getString("preview_image_url")
     )
 }

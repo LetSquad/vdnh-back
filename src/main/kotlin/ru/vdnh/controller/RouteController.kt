@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.vdnh.model.dto.MapRouteDataDTO
+import ru.vdnh.model.dto.PreparedRouteDataDTO
 import ru.vdnh.model.dto.RouteNavigationDTO
 import ru.vdnh.service.RouteService
 
@@ -25,7 +26,7 @@ class RouteController(
         description = "Получение готового маршрута по его идентификатору"
     )
     @GetMapping("/prepared/{id}")
-    fun getPreparedRoute(@PathVariable id: Long): MapRouteDataDTO {
+    fun getPreparedRoute(@PathVariable id: Long): PreparedRouteDataDTO {
         return routeService.getPreparedRoute(id)
     }
 
