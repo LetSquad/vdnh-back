@@ -29,13 +29,13 @@ class RouteMapper(private val mapper: ObjectMapper) {
         previewImageUrl = VDNH_BASE_URL + routeEntity.previewImageUrl
     )
 
-    fun domainToPreparedDTO(preparedRoute: PreparedRoute, routeDtoList: List<RouteDTO>): PreparedRouteDataDTO =
+    fun domainToPreparedDTO(preparedRoute: PreparedRoute, routeDto: RouteDTO): PreparedRouteDataDTO =
         PreparedRouteDataDTO(
             name = preparedRoute.name,
             description = preparedRoute.description,
             imageUrl = preparedRoute.imageUrl,
             previewImageUrl = preparedRoute.previewImageUrl,
-            mapData = routeDtoList
+            mapData = routeDto
         )
 
     companion object {

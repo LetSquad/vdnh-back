@@ -6,5 +6,5 @@ data class PreparedRouteDataDTO(
     val description: String,
     val previewImageUrl: String,
     val imageUrl: String,
-    val mapData: List<RouteDTO>
+    val mapData: RouteDTO
 )

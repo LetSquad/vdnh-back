@@ -28,11 +28,11 @@ class RouteService(
         val locations = placeService.getPlacesByRouteId(routeEntity.id)
             .map { locationMapper.placeToLocation(it) }
 
-        val routeDTOList = listOf(mapboxService.makeRoute(locations, MovementRouteType.WALKING))
+        val routeDTO = mapboxService.makeRoute(locations, MovementRouteType.WALKING)
 
         return routeEntity
             .let { routeMapper.entityToPreparedRouteDomain(it) }
-            .let { routeMapper.domainToPreparedDTO(it, routeDTOList) }
+            .let { routeMapper.domainToPreparedDTO(it, routeDTO) }
     }
 
     fun getNavigateRoute(dto: RouteNavigationDTO): MapRouteDataDTO {
