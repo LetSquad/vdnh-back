@@ -7,6 +7,7 @@ import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import org.springframework.stereotype.Service
 import ru.vdnh.config.properties.MapboxConfigProperties
+import ru.vdnh.config.properties.RouteNavigateConfigProperties
 import ru.vdnh.exception.MapboxException
 import ru.vdnh.mapper.MapRouteMapper
 import ru.vdnh.model.domain.Location
@@ -18,7 +19,9 @@ import ru.vdnh.model.enums.MovementRouteType
 @Service
 class MapboxService(
     private val mapRouteMapper: MapRouteMapper,
-    private val mapboxConfigProperties: MapboxConfigProperties
+
+    private val mapboxConfigProperties: MapboxConfigProperties,
+    private val navigateProperties: RouteNavigateConfigProperties
 ) {
 
     fun makeRoute(
@@ -37,13 +40,20 @@ class MapboxService(
                 .executeCall()
 
             if (response.isSuccessful) {
-                val route = response.body()?.routes()?.get(0)!!
+                val route = response.body()!!.routes()[0]
 
                 val geometryStr: String? = route.geometry()
-                val commonDistance: Double = route.distance()
-                val commonDuration: Double = route.duration()
-                val mapInfo: List<MapPointTimeInfoDTO> = route.legs()?.map { MapPointTimeInfoDTO(it.distance(), it.duration()) }!!
                 val lineString: LineString = LineString.fromPolyline(geometryStr!!, PRECISION_6)
+
+                val commonDistance: Double = route.distance()
+
+                val commonRouteDuration = route.duration()
+                val commonLocationsDuration =
+                    locations.sumOf { it.visitTime?.toSeconds() ?: navigateProperties.default.visitDuration.toSeconds() }
+                val commonDuration = commonRouteDuration + commonLocationsDuration
+
+                val mapInfo: List<MapPointTimeInfoDTO> =
+                    route.legs()!!.map { MapPointTimeInfoDTO(it.distance(), it.duration()) }
 
                 return mapRouteMapper.toRouteDTO(locations, lineString, mapInfo, commonDistance, commonDuration)
             }
@@ -53,4 +63,5 @@ class MapboxService(
             throw MapboxException("Unexpected Mapbox error: ${exc.message}")
         }
     }
+
 }
