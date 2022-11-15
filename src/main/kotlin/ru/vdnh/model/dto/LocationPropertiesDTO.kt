@@ -22,5 +22,6 @@ data class LocationPropertiesDTO(
     val scheduleDayOff: Boolean?,
     val scheduleAdditionalInfo: List<String>?,
     val places: List<Long>?,
-    val events: List<Long>?
+    val events: List<Long>?,
+    val visitTime: Long?
 )

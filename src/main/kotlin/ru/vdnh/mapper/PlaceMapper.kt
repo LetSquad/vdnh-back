@@ -65,7 +65,6 @@ class PlaceMapper(
             coordinates = listOf(place.coordinates.longitude, place.coordinates.latitude)
         ),
 
-        properties = locationPropertiesMapper.domainToDto(place),
-        visitTime = place.visitTime.toSeconds()
+        properties = locationPropertiesMapper.domainToDto(place)
     )
 }

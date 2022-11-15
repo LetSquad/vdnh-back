@@ -47,7 +47,8 @@ class LocationPropertiesMapper(private val vdnhConfigProperties: VdnhConfigPrope
             scheduleDayOff = workingHours?.isDayOff,
             scheduleAdditionalInfo = null,
             events = place.events,
-            places = null
+            places = null,
+            visitTime = place.visitTime.toSeconds()
         )
     }
 
@@ -76,7 +77,8 @@ class LocationPropertiesMapper(private val vdnhConfigProperties: VdnhConfigPrope
         scheduleDayOff = null,
         scheduleAdditionalInfo = null,
         places = event.places.map { it.id },
-        events = null
+        events = null,
+        visitTime = event.visitTime.toSeconds()
     )
 
     private fun retrieveTag(subjectCode: String?, typeCode: String?): LocationTag = when {
