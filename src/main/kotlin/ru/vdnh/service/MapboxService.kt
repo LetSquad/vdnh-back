@@ -49,7 +49,7 @@ class MapboxService(
 
                 val commonRouteDuration = route.duration()
                 val commonLocationsDuration =
-                    locations.sumOf { it.visitTime?.toSeconds() ?: (navigateProperties.default.visitTimeMinutes * SECONDS_IN_MINUTE) }
+                    locations.sumOf { it.visitTime?.toSeconds() ?: navigateProperties.default.visitDuration.toSeconds() }
                 val commonDuration = commonRouteDuration + commonLocationsDuration
 
                 val mapInfo: List<MapPointTimeInfoDTO> =
@@ -64,7 +64,4 @@ class MapboxService(
         }
     }
 
-    companion object {
-        private const val SECONDS_IN_MINUTE = 60L
-    }
 }

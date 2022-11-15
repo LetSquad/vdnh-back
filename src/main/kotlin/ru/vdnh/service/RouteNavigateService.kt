@@ -170,7 +170,7 @@ class RouteNavigateService(
         dateFinish: LocalDateTime?,
     ): Int {
         if (dateFinish == null || dateStart == null) {
-            return navigateProperties.default.routeTimeMinutes
+            return navigateProperties.default.routeDuration.toMinutes().toInt()
         }
 
         val visitTimeMinutes = (dateFinish.toLocalTime().toSecondOfDay() - dateStart.toLocalTime().toSecondOfDay()) / MINUTES_IN_HOUR
@@ -184,7 +184,7 @@ class RouteNavigateService(
         val foodLocationToInsert = mutableListOf<Location>()
         locations.forEachIndexed { i, location ->
             if (minutes < navigateProperties.toFoodLocationDurationMinutes) {
-                minutes += location.visitTime?.toMinutes()?.toInt() ?: navigateProperties.default.visitTimeMinutes
+                minutes += location.visitTime?.toMinutes()?.toInt() ?: navigateProperties.default.visitDuration.toMinutes().toInt()
             } else {
                 indexesBeforeFood.add(i + 1)
                 val closestFoodLocation: Location = findClosestFoodLocation(location)

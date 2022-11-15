@@ -30,9 +30,9 @@ app:
       event-start: 50
     default:
       # дефолтное время посещения локации
-      visit-time-minutes: 15
+      visit-duration: 15m
       # дефолтное время маршрута
-      route-time-minutes: 180
+      route-duration: 3h
       # id центрального входа
       start-place-id: 334
       # максимальное количество локаций в маршруте (ограничение mapbox)
