@@ -4,5 +4,6 @@ import ru.vdnh.model.enums.CategoryType
 
 data class MapPointDTO(
     val id: Long,
-    val category: CategoryType
+    val category: CategoryType,
+    val description: Map<String, String?>?,
 )

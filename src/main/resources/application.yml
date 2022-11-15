@@ -20,7 +20,7 @@ app:
     #   mergeParam = 2, resultRoute = [1, 2, 4, 5, 7, 8, 3, 6, 9]
     location-merge-strategy: 1
     #  приблизительный процент от общего времени маршрута который закладывается на время в пути
-    time-to-route-percent: 0.35
+    time-to-route-percent: 0.50
     priority:
       # изменение приоритета при совпадении/не совпадению по критерию
       coefficient: 100
@@ -42,3 +42,6 @@ app:
 
 vdnh:
   base-url: 'https://vdnh.ru'
+  key-title-ru: 'titleRu'
+  key-title-en: 'titleEn'
+  key-title-cn: 'titleCn'

@@ -22,6 +22,11 @@ class LocationMapper{
         priority = domain.priority,
         subjectCode = domain.subjectCode,
         typeCode = domain.typeCode,
+        description = mapOf(
+            KEY_DESCRIPTION_RU to domain.description,
+            KEY_DESCRIPTION_EN to domain.descriptionEn,
+            KEY_DESCRIPTION_CN to domain.descriptionCn
+        )
     )
 
     fun eventToLocation(domain: Event) = Location(
@@ -35,6 +40,7 @@ class LocationMapper{
         priority = domain.priority,
         subjectCode = domain.subjectCode,
         typeCode = domain.typeCode,
+        description = null
     )
 
     fun getCoordinates(domain: Event): Coordinates {
@@ -43,6 +49,12 @@ class LocationMapper{
         }
 
         return domain.places[0].coordinates
+    }
+
+    companion object {
+        private const val KEY_DESCRIPTION_RU = "descriptionRu"
+        private const val KEY_DESCRIPTION_EN = "descriptionEn"
+        private const val KEY_DESCRIPTION_CN = "descriptionCn"
     }
 
 }

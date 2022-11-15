@@ -20,7 +20,11 @@ class LocationPropertiesMapper(private val vdnhConfigProperties: VdnhConfigPrope
             category = CategoryType.PLACE,
             isVisible = true,
             zoom = calculateZoom(place.priority),
-            title = mapOf(KEY_TITLE_RU to place.title, KEY_TITLE_EN to place.titleEn, KEY_TITLE_CN to place.titleCn),
+            title = mapOf(
+                vdnhConfigProperties.keyTitleRu to place.title,
+                vdnhConfigProperties.keyTitleEn to place.titleEn,
+                vdnhConfigProperties.keyTitleCn to place.titleCn
+            ),
             shortTitle = mapOf(
                 KEY_SHORT_TITLE_RU to createShortTitle(place.title),
                 KEY_SHORT_TITLE_EN to createShortTitle(place.titleEn),
@@ -55,7 +59,11 @@ class LocationPropertiesMapper(private val vdnhConfigProperties: VdnhConfigPrope
         category = CategoryType.EVENT,
         isVisible = true,
         zoom = calculateZoom(event.priority),
-        title = mapOf(KEY_TITLE_RU to event.title, KEY_TITLE_EN to event.titleEn, KEY_TITLE_CN to event.titleCn),
+        title = mapOf(
+            vdnhConfigProperties.keyTitleRu to event.title,
+            vdnhConfigProperties.keyTitleEn to event.titleEn,
+            vdnhConfigProperties.keyTitleCn to event.titleCn
+        ),
         shortTitle = mapOf(
             KEY_SHORT_TITLE_RU to createShortTitle(event.title),
             KEY_SHORT_TITLE_EN to createShortTitle(event.titleEn),
@@ -111,10 +119,6 @@ class LocationPropertiesMapper(private val vdnhConfigProperties: VdnhConfigPrope
     }
 
     companion object {
-        private const val KEY_TITLE_RU = "titleRu"
-        private const val KEY_TITLE_EN = "titleEn"
-        private const val KEY_TITLE_CN = "titleCn"
-
         private const val KEY_SHORT_TITLE_RU = "shortTitleRu"
         private const val KEY_SHORT_TITLE_EN = "shortTitleEn"
         private const val KEY_SHORT_TITLE_CN = "shortTitleCn"

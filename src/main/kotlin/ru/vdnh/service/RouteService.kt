@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import ru.vdnh.mapper.LocationMapper
 import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.Location
+import ru.vdnh.model.dto.MapDataDTO
 import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.dto.PreparedRouteDataDTO
 import ru.vdnh.model.dto.PreparedRouteNavigationDTO
@@ -23,6 +24,15 @@ class RouteService(
     private val locationMapper: LocationMapper,
     private val routeMapper: RouteMapper
 ) {
+
+    fun getAllPreparedRoute(): MapDataDTO {
+        // получаем все готовые маршруты
+        val routeList = routeRepository.getAllPreparedRoute()
+            .map { routeMapper.entityToPreparedRouteDomain(it) }
+            .map { routeMapper.domainToPreparedPreviewDTO(it) }
+
+        return MapDataDTO(routeList.sortedBy { it.id })
+    }
 
     fun getPreparedRoute(dto: PreparedRouteNavigationDTO): PreparedRouteDataDTO {
         // получаем список готового маршрута

@@ -2,10 +2,12 @@ package ru.vdnh.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import ru.vdnh.model.dto.MapDataDTO
 import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.dto.PreparedRouteDataDTO
 import ru.vdnh.model.dto.PreparedRouteNavigationDTO
@@ -27,6 +29,15 @@ class RouteController(
     @PostMapping("/prepared")
     fun getPreparedRoute(@RequestBody dto: PreparedRouteNavigationDTO): PreparedRouteDataDTO {
         return routeService.getPreparedRoute(dto)
+    }
+
+    @Operation(
+        summary = "Получение списка готовых маршрутов",
+        description = "Получение списка готовых маршрутов"
+    )
+    @GetMapping("/prepared")
+    fun getAllPreparedRoute(): MapDataDTO {
+        return routeService.getAllPreparedRoute()
     }
 
     @Operation(
