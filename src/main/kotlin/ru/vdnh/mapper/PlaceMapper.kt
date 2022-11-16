@@ -54,11 +54,7 @@ class PlaceMapper(
         ),
 
         schedule = placeEntity.schedule?.let { mapper.readValue(it) },
-        events = events,
-
-        description = placeEntity.description,
-        descriptionEn = placeEntity.descriptionEn,
-        descriptionCn = placeEntity.descriptionCn
+        events = events
     )
 
     fun domainToDto(place: Place): PlaceDTO = PlaceDTO(

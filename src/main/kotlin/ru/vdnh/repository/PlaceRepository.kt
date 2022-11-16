@@ -16,7 +16,5 @@ interface PlaceRepository {
 
     fun getByCoordinatesId(coordinatesId: Long): PlaceEntity
 
-    fun getPlacesByRouteId(id: Long): List<PlaceEntity>
-
     fun getPlacesByType(typeCode: String): List<PlaceEntity>
 }

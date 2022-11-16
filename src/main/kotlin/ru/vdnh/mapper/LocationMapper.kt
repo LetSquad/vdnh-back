@@ -5,13 +5,14 @@ import ru.vdnh.model.domain.Coordinates
 import ru.vdnh.model.domain.Event
 import ru.vdnh.model.domain.Location
 import ru.vdnh.model.domain.Place
+import ru.vdnh.model.domain.RoutePlace
 import ru.vdnh.model.enums.CategoryType
 
 
 @Component
 class LocationMapper{
 
-    fun placeToLocation(domain: Place) = Location(
+    fun placeToLocation(domain: Place, routePlace: RoutePlace?) = Location(
         locationId = domain.id,
         coordinates = domain.coordinates,
         locationCodeType = CategoryType.PLACE,
@@ -23,9 +24,9 @@ class LocationMapper{
         subjectCode = domain.subjectCode,
         typeCode = domain.typeCode,
         description = mapOf(
-            KEY_DESCRIPTION_RU to domain.description,
-            KEY_DESCRIPTION_EN to domain.descriptionEn,
-            KEY_DESCRIPTION_CN to domain.descriptionCn
+            KEY_DESCRIPTION_RU to (routePlace?.description ?: ""),
+            KEY_DESCRIPTION_EN to (routePlace?.descriptionEn ?: ""),
+            KEY_DESCRIPTION_CN to (routePlace?.descriptionCn ?: "")
         )
     )
 

@@ -14,12 +14,12 @@ class LocationService(
 
     fun getByPlaceId(placeId: Long): Location {
         return placeService.getPlaceById(placeId)
-            .let { locationMapper.placeToLocation(it) }
+            .let { locationMapper.placeToLocation(it, null) }
     }
 
     fun getByPlaceCoordinateId(placeCoordinateId: Long): Location {
         return placeService.getPlaceByCoordinateId(placeCoordinateId)
-            .let { locationMapper.placeToLocation(it) }
+            .let { locationMapper.placeToLocation(it, null) }
     }
 
     fun getByTags(tags: List<String>): List<List<Location>> {
@@ -33,7 +33,7 @@ class LocationService(
         locationsBySubject.addAll(
             places
                 .filter { !BLACK_SET_TYPE_CODES.contains(it.typeCode) }
-                .map { locationMapper.placeToLocation(it) }
+                .map { locationMapper.placeToLocation(it, null) }
         )
 
         val events =
@@ -66,7 +66,7 @@ class LocationService(
 
     fun getAllFoodLocations(): List<Location> {
         return placeService.getPlacesByType(FOOD_TYPE_CODE)
-            .map { locationMapper.placeToLocation(it) }
+            .map { locationMapper.placeToLocation(it, null) }
     }
 
     companion object {

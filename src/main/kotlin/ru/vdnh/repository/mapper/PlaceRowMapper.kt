@@ -40,10 +40,6 @@ class PlaceRowMapper(
             nameCn = rs.getString("name_cn"),
             iconCode = rs.getString("icon_code"),
             iconColor = rs.getString("icon_color")
-        ),
-
-        description = rs.getString("description"),
-        descriptionEn = rs.getString("description_en"),
-        descriptionCn = rs.getString("description_cn")
+        )
     )
 }

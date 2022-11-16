@@ -3,6 +3,7 @@ package ru.vdnh.service
 import org.springframework.stereotype.Service
 import ru.vdnh.mapper.PlaceMapper
 import ru.vdnh.model.domain.Place
+import ru.vdnh.model.domain.RoutePlace
 import ru.vdnh.model.dto.PlaceDTO
 import ru.vdnh.model.entity.PlaceEntity
 import ru.vdnh.repository.PlaceRepository
@@ -65,13 +66,10 @@ class PlaceService(
         return placeDomainList
     }
 
-    fun getPlacesByRouteId(routeId: Long): List<Place> {
-        val places = placeRepository.getPlacesByRouteId(routeId)
-        val placeDomainList = mutableListOf<Place>()
-        for (place in places) {
-            val eventsByPlaceId: List<Long> = placeRepository.getEventsByPlaceId(place.id)
-            placeDomainList.add(placeMapper.entityToDomain(place, eventsByPlaceId))
-        }
-        return placeDomainList
+    fun getPlacesByRouteId(routeId: Long, routePlace: RoutePlace): Place {
+        val place = placeRepository.getPlaceById(routePlace.placeId)
+
+        val eventsByPlaceId: List<Long> = placeRepository.getEventsByPlaceId(place.id)
+        return placeMapper.entityToDomain(place, eventsByPlaceId)
     }
 }

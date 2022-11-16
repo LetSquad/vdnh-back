@@ -68,22 +68,6 @@ class PlaceJdbc(
         )!!
     }
 
-    override fun getPlacesByRouteId(id: Long): List<PlaceEntity> {
-        return jdbcTemplate.query(
-            "SELECT p.id, p.title, p.title_en, p.title_cn, " +
-                    "p.priority, p.url, p.image_url, p.tickets_url, p.is_active, p.coordinates_id, " +
-                    "p.type_code, p.subject_code, p.created_at, p.visit_time_minutes, p.schedule, " +
-                    "p.payment_conditions, p.placement, c.latitude, c.longitude, " +
-                    "c.connections, c.load_factor, lt.name, lt.name_en, lt.name_cn, lt.icon_code, lt.icon_color, " +
-                    "rp.description, rp.description_en, rp.description_cn " +
-                    "FROM place p " +
-                    "LEFT JOIN coordinates c on p.coordinates_id = c.id " +
-                    "LEFT JOIN location_type lt on p.type_code = lt.code " +
-                    "left join route_place rp on p.id = rp.place_id " +
-                    "where rp.route_id = ? order by place_order", placeRowMapper, id
-        )
-    }
-
     companion object {
         const val SQL_SELECT_ENTITY = "SELECT p.id, p.title, p.title_en, p.title_cn, " +
                 "p.priority, p.url, p.image_url, p.tickets_url, p.is_active, p.coordinates_id, " +
