@@ -58,7 +58,6 @@ class EventMapper(
             coordinates = listOf(event.coordinates!!.longitude, event.coordinates.latitude)
         ),
 
-        properties = locationPropertiesMapper.domainToDto(event),
-        visitTime = event.visitTime.toSeconds()
+        properties = locationPropertiesMapper.domainToDto(event)
     )
 }
