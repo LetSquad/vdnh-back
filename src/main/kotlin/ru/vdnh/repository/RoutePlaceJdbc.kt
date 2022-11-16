@@ -13,7 +13,7 @@ class RoutePlaceJdbc(
 
     override fun getByRouteId(id: Long): List<RoutePlaceEntity> {
         return jdbcTemplate.query(
-            "$SQL_SELECT_ENTITY WHERE route_id = ?", routePlaceRowMapper,
+            "$SQL_SELECT_ENTITY WHERE route_id = ? ORDER BY place_order", routePlaceRowMapper,
             id
         )
     }
