@@ -17,4 +17,5 @@ data class Location(
     val priority: Int?,
     val subjectCode: String?,
     val typeCode: String?,
+    val description: Map<String, String?>?
 )

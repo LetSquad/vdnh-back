@@ -68,13 +68,6 @@ class PlaceJdbc(
         )!!
     }
 
-    override fun getPlacesByRouteId(id: Long): List<PlaceEntity> {
-        return jdbcTemplate.query(
-            "$SQL_SELECT_ENTITY left join route_place rp on p.id = rp.place_id " +
-                    "where rp.route_id = ? order by place_order", placeRowMapper, id
-        )
-    }
-
     companion object {
         const val SQL_SELECT_ENTITY = "SELECT p.id, p.title, p.title_en, p.title_cn, " +
                 "p.priority, p.url, p.image_url, p.tickets_url, p.is_active, p.coordinates_id, " +

@@ -2,9 +2,9 @@ package ru.vdnh.model.dto
 
 
 data class PreparedRouteDataDTO(
-    val name: String,
-    val description: String,
-    val previewImageUrl: String,
+    val id: Long,
+    val title: Map<String, String?>, // TODO: локализация
+    val description: Map<String, String?>, // TODO: локализация
     val imageUrl: String,
-    val mapData: RouteDTO
+    val route: RouteDTO
 )

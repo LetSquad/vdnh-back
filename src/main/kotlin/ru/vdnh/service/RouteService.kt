@@ -2,14 +2,17 @@ package ru.vdnh.service
 
 import org.springframework.stereotype.Service
 import ru.vdnh.mapper.LocationMapper
+import ru.vdnh.mapper.PlaceRouteMapper
 import ru.vdnh.mapper.RouteMapper
 import ru.vdnh.model.domain.Location
+import ru.vdnh.model.dto.MapDataDTO
 import ru.vdnh.model.dto.MapRouteDataDTO
 import ru.vdnh.model.dto.PreparedRouteDataDTO
 import ru.vdnh.model.dto.PreparedRouteNavigationDTO
 import ru.vdnh.model.dto.RouteDTO
 import ru.vdnh.model.dto.RouteNavigationDTO
 import ru.vdnh.model.enums.MovementRouteType
+import ru.vdnh.repository.RoutePlaceRepository
 import ru.vdnh.repository.RouteRepository
 
 @Service
@@ -20,16 +23,34 @@ class RouteService(
     private val routeNavigateService: RouteNavigateService,
 
     private val routeRepository: RouteRepository,
+    private val routePlaceRepository: RoutePlaceRepository,
     private val locationMapper: LocationMapper,
-    private val routeMapper: RouteMapper
+    private val routeMapper: RouteMapper,
+    private val placeRouteMapper: PlaceRouteMapper
 ) {
+
+    fun getAllPreparedRoute(): MapDataDTO {
+        // получаем все готовые маршруты
+        val routeList = routeRepository.getAllPreparedRoute()
+            .map { routeMapper.entityToPreparedRouteDomain(it) }
+            .map { routeMapper.domainToPreparedPreviewDTO(it) }
+
+        return MapDataDTO(routeList.sortedBy { it.id })
+    }
 
     fun getPreparedRoute(dto: PreparedRouteNavigationDTO): PreparedRouteDataDTO {
         // получаем список готового маршрута
         val routeEntity = routeRepository.getRouteById(dto.id)
-        val locations = placeService.getPlacesByRouteId(routeEntity.id)
-            .map { locationMapper.placeToLocation(it) }
-            .toMutableList()
+
+        val routePlaces = routePlaceRepository.getByRouteId(dto.id)
+            .map { placeRouteMapper.entityToDomain(it) }
+
+        val locations = mutableListOf<Location>()
+        for (routePlace in routePlaces) {
+            locations.add(placeService.getPlacesByRouteId(routeEntity.id, routePlace)
+                .let { locationMapper.placeToLocation(it, routePlace) }
+            )
+        }
 
         // добавляем точку входа на маршрут (если есть)
         if (dto.entrance != null) {

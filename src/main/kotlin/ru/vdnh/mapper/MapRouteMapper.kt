@@ -7,7 +7,7 @@ import ru.vdnh.model.dto.GeometryRouteDTO
 import ru.vdnh.model.dto.MapPointDTO
 import ru.vdnh.model.dto.MapPointTimeInfoDTO
 import ru.vdnh.model.dto.RouteDTO
-import java.util.UUID
+import java.util.*
 
 @Component
 class MapRouteMapper {
@@ -26,7 +26,7 @@ class MapRouteMapper {
                 coordinates = lineString.coordinates()
                     .map { listOf(it.longitude().toBigDecimal(), it.latitude().toBigDecimal()) }
             ),
-            mapPoints = locations.map { MapPointDTO(it.locationId, it.locationCodeType) },
+            mapPoints = locations.map { MapPointDTO(it.locationId, it.locationCodeType, it.description) },
             mapPointTimes = timeInfo,
             distance = distance ?: 0.0,
             time = time ?: 0.0
